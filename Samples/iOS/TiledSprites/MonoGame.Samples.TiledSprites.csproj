@@ -11,7 +11,7 @@
     <RootNamespace>MonoGame.Samples.TiledSprites</RootNamespace>
     <MtouchSdkVersion>3.0</MtouchSdkVersion>
     <MtouchMinimumOS>3.0</MtouchMinimumOS>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <BundleDisplayName>TiledSprites</BundleDisplayName>
     <BundleIcon>GameThumbnail.png</BundleIcon>
     <BundleIdentifier>project.MonoGame.TiledSprites</BundleIdentifier>
@@ -147,4 +147,9 @@
       <Name>MonoGame.Framework.iOS</Name>
     </ProjectReference>
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="IPhone" />
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

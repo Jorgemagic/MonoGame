@@ -8,7 +8,7 @@
     <ProjectGuid>{326DC8E8-649F-4F96-92BA-EE0EF51A32DB}</ProjectGuid>
     <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <BundleDisplayName>Virtual GamePad</BundleDisplayName>
     <BundleIcon>monogameicon.png</BundleIcon>
     <RootNamespace>MonoGame.Samples.VirtualGamePad</RootNamespace>
@@ -147,4 +147,9 @@
       <Name>MonoGame.Framework.iOS</Name>
     </ProjectReference>
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="IPhone" />
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

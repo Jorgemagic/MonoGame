@@ -13,11 +13,17 @@ namespace Microsoft.Xna.Framework.Graphics
 		public Vector2 Position;
 		public uint Color;
 		public Vector2 TextureCoordinate;
+		
 		public VertexPosition2ColorTexture ( Vector2 position, Color color, Vector2 texCoord )
 		{
 			Position = position;
 			Color = color.GLPackedValue;
 			TextureCoordinate = texCoord;
+		}
+		
+		public static int GetSize()
+		{
+			return sizeof(float)*4+sizeof(uint);
 		}
 	}
 }

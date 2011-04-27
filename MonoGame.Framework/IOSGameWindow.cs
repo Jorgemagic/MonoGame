@@ -59,6 +59,7 @@ using OpenTK.Graphics.ES20;
 
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using Microsoft.Xna.Framework.Graphics;
 #endregion Using Statements
 
 namespace Microsoft.Xna.Framework
@@ -118,14 +119,16 @@ namespace Microsoft.Xna.Framework
 		{	    
 			try
 			{
-		        // TODO ContextRenderingApi = EAGLRenderingAPI.OpenGLES2;
-				ContextRenderingApi = EAGLRenderingAPI.OpenGLES1;
+//				ContextRenderingApi = EAGLRenderingAPI.OpenGLES1;
+		        ContextRenderingApi = EAGLRenderingAPI.OpenGLES2;
+				GraphicsDevice.openGLESVersion = EAGLRenderingAPI.OpenGLES2;
 				base.CreateFrameBuffer();
 		    } 
 			catch (Exception) 
 			{
 		        // device doesn't support OpenGLES 2.0; retry with 1.1:
-		        ContextRenderingApi = EAGLRenderingAPI.OpenGLES1;
+				ContextRenderingApi = EAGLRenderingAPI.OpenGLES1;
+				GraphicsDevice.openGLESVersion = EAGLRenderingAPI.OpenGLES1;
 				base.CreateFrameBuffer();
 		    }
 			

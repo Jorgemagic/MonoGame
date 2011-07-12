@@ -10,7 +10,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Marblets</RootNamespace>
     <AssemblyName>Marblets</AssemblyName>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <BundleDisplayName>Marblets</BundleDisplayName>
     <BundleIcon>GameThumbnail.png</BundleIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
@@ -189,4 +189,9 @@
   <ItemGroup>
     <None Include="Info.plist" />
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="IPhone" />
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

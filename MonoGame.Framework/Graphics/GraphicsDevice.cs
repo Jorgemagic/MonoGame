@@ -45,6 +45,7 @@ using System.Runtime.InteropServices;
 using OpenTK.Graphics.ES11;
 
 using Microsoft.Xna.Framework;
+using MonoTouch.OpenGLES;
 
 namespace Microsoft.Xna.Framework.Graphics
 {	
@@ -65,6 +66,8 @@ namespace Microsoft.Xna.Framework.Graphics
         public RasterizerState RasterizerState { get; set; }
         public DepthStencilState DepthStencilState { get; set; }
 		public BlendState BlendState { get; set; }
+		
+		public static EAGLRenderingAPI openGLESVersion;
 		
 		private RenderTargetBinding[] currentRenderTargets;
 		

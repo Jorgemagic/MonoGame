@@ -2,7 +2,10 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using OpenTK.Graphics.ES11;
+using GL11 = OpenTK.Graphics.ES11.GL;
+using GL20 = OpenTK.Graphics.ES20.GL;
+using All11 = OpenTK.Graphics.ES11.All;
+using All20 = OpenTK.Graphics.ES20.All;
 
 using Microsoft.Xna.Framework;
 
@@ -89,61 +92,77 @@ namespace Microsoft.Xna.Framework.Graphics
 			_matrix = transformMatrix;
 		}
 		
+		
 		public void End()
+		{
+			if (GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
+				End20();
+			else
+				End11();
+		}
+		
+		private void End20()
+		{
+			GL20.Viewport(0, 0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height);			// configura el viewport
+			
+			_batcher.DrawBatch20 ( _sortMode );
+		}
+		
+		private void End11()
 		{		
 			// Disable Blending by default = BlendState.Opaque
-			GL.Disable(All.Blend);
+			GL11.Disable(All11.Blend);
 			
 			// set the blend mode
 			if ( _blendState == BlendState.NonPremultiplied )
 			{
-				GL.BlendFunc(All.One, All.OneMinusSrcAlpha);
-				GL.Enable(All.Blend);
+				GL11.BlendFunc(All11.One, All11.OneMinusSrcAlpha);
+				GL11.Enable(All11.Blend);
 			}
 			
 			if ( _blendState == BlendState.AlphaBlend )
 			{
-				GL.BlendFunc(All.SrcAlpha, All.OneMinusSrcAlpha);
-				GL.Enable(All.Blend);				
+				GL11.BlendFunc(All11.SrcAlpha, All11.OneMinusSrcAlpha);
+				GL11.Enable(All11.Blend);				
 			}
 			
 			if ( _blendState == BlendState.Additive )
 			{
-				GL.BlendFunc(All.SrcAlpha,All.One);
-				GL.Enable(All.Blend);	
+				GL11.BlendFunc(All11.SrcAlpha,All11.One);
+				GL11.Enable(All11.Blend);	
 			}			
 			
 			// set camera
-			GL.MatrixMode(All.Projection);
-			GL.LoadIdentity();							
+			GL11.MatrixMode(All11.Projection);
+			GL11.LoadIdentity();							
 			
 			// Switch on the flags.
 	        switch (this.graphicsDevice.PresentationParameters.DisplayOrientation)
 	        {
 				case DisplayOrientation.LandscapeLeft:
                 {
-					GL.Rotate(-90, 0, 0, 1); 
-					GL.Ortho(0, this.graphicsDevice.Viewport.Height, this.graphicsDevice.Viewport.Width,  0, -1, 1);
+					GL11.Rotate(-90, 0, 0, 1); 
+					GL11.Ortho(0, this.graphicsDevice.Viewport.Height, this.graphicsDevice.Viewport.Width,  0, -1, 1);
 					break;
 				}
 				
 				case DisplayOrientation.LandscapeRight:
                 {
-					GL.Rotate(90, 0, 0, 1); 
-					GL.Ortho(0, this.graphicsDevice.Viewport.Height, this.graphicsDevice.Viewport.Width,  0, -1, 1);
+					GL11.Rotate(90, 0, 0, 1); 
+					GL11.Ortho(0, this.graphicsDevice.Viewport.Height, this.graphicsDevice.Viewport.Width,  0, -1, 1);
 					break;
 				}
 				
 			case DisplayOrientation.PortraitUpsideDown:
                 {
-					GL.Rotate(180, 0, 0, 1); 
-					GL.Ortho(0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height,  0, -1, 1);
+					GL11.Rotate(180, 0, 0, 1); 
+					GL11.Ortho(0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height,  0, -1, 1);
 					break;
 				}
 				
 				default:
 				{
-					GL.Ortho(0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height, 0, -1, 1);
+					GL11.Ortho(0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height, 0, -1, 1);
 					break;
 				}
 			}			
@@ -151,35 +170,35 @@ namespace Microsoft.Xna.Framework.Graphics
 			// Enable Scissor Tests if necessary
 			if ( this.graphicsDevice.RenderState.ScissorTestEnable )
 			{
-				GL.Enable(All.ScissorTest);				
+				GL11.Enable(All11.ScissorTest);				
 			}
 			
-			GL.MatrixMode(All.Modelview);			
+			GL11.MatrixMode(All11.Modelview);			
 			
-			GL.Viewport(0, 0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height);
+			GL11.Viewport(0, 0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height);
 			
 			// Enable Scissor Tests if necessary
 			if ( this.graphicsDevice.RenderState.ScissorTestEnable )
 			{
-				GL.Scissor(this.graphicsDevice.ScissorRectangle.X, this.graphicsDevice.ScissorRectangle.Y, this.graphicsDevice.ScissorRectangle.Width, this.graphicsDevice.ScissorRectangle.Height );
+				GL11.Scissor(this.graphicsDevice.ScissorRectangle.X, this.graphicsDevice.ScissorRectangle.Y, this.graphicsDevice.ScissorRectangle.Width, this.graphicsDevice.ScissorRectangle.Height );
 			}			
 			
-			GL.LoadMatrix( ref _matrix.M11 );	
+			GL11.LoadMatrix( ref _matrix.M11 );	
 			
 			// Initialize OpenGL states (ideally move this to initialize somewhere else)	
-			GL.Disable(All.DepthTest);
-			GL.TexEnv(All.TextureEnv, All.TextureEnvMode,(int) All.BlendSrc);
-			GL.Enable(All.Texture2D);
-			GL.EnableClientState(All.VertexArray);
-			GL.EnableClientState(All.ColorArray);
-			GL.EnableClientState(All.TextureCoordArray);
+			GL11.Disable(All11.DepthTest);
+			GL11.TexEnv(All11.TextureEnv, All11.TextureEnvMode,(int) All11.BlendSrc);
+			GL11.Enable(All11.Texture2D);
+			GL11.EnableClientState(All11.VertexArray);
+			GL11.EnableClientState(All11.ColorArray);
+			GL11.EnableClientState(All11.TextureCoordArray);
 			
 			// Enable Culling for better performance
-			GL.Enable(All.CullFace);
-			GL.FrontFace(All.Cw);
-			GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);						
+			GL11.Enable(All11.CullFace);
+			GL11.FrontFace(All11.Cw);
+			GL11.Color4(1.0f, 1.0f, 1.0f, 1.0f);						
 			
-			_batcher.DrawBatch ( _sortMode );
+			_batcher.DrawBatch11 ( _sortMode );
 		}
 		
 		public void Draw 

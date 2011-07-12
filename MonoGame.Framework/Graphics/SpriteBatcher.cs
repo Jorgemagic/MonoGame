@@ -60,13 +60,9 @@ namespace Microsoft.Xna.Framework.Graphics
 		GCHandle _vertexHandle;
 		GCHandle _indexHandle;
 		
-		//OpenGLES2 variables
-		int program;
-		
-		int attributePosition = 0;
-		int attributeTexCoord = 1;
-		
-		
+		//OpenGL2.0 Attributes
+		public int attributePosition = 0;
+		public int attributeTexCoord = 1;
 
 		public SpriteBatcher ()
 		{
@@ -90,98 +86,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				_index[i*6+4] = (ushort)(i*4+3);
 				_index[i*6+5] = (ushort)(i*4+2);
 			}
-			
-			if (GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
-				InitGL20();
 		}
-		
-		private void InitGL20()
-		{
-			string vertexShaderSrc =  @"attribute vec4 aPosition; 
-                                        attribute vec2 aTexCoord;
-                                        varying vec2 vTexCoord;
-                                        void main()                  
-                                        {                         
-                                           vTexCoord = aTexCoord;
-                                           gl_Position = aPosition; 
-                                        }";                           
-            
-            string fragmentShaderSrc = @"precision mediump float;
-                                         varying vec2 vTexCoord;
-                                         uniform sampler2D sTexture;
-                                           void main()                                
-                                           {                                         
-                                             gl_FragColor = vec4(1.0,0.0,0.0,1.0);
-                                             //gl_FragColor = texture2D(sTexture, vTexCoord);
-                                           }";
-			
-			int vertexShader = LoadShader (All20.VertexShader, vertexShaderSrc );
-            int fragmentShader = LoadShader (All20.FragmentShader, fragmentShaderSrc );
-            program = GL20.CreateProgram();
-            if (program == 0)
-                throw new InvalidOperationException ("Unable to create program");
-
-            GL20.AttachShader (program, vertexShader);
-            GL20.AttachShader (program, fragmentShader);
-            
-            //Set position
-            GL20.BindAttribLocation (program, attributePosition, "aPosition");
-            GL20.BindAttribLocation (program, attributeTexCoord, "aTexCoord");
-            
-            
-            GL20.LinkProgram (program);
-
-            int linked = 0;
-            GL20.GetProgram (program, All20.LinkStatus, ref linked);
-            if (linked == 0) {
-                // link failed
-                int length = 0;
-                GL20.GetProgram (program, All20.InfoLogLength, ref length);
-                if (length > 0) {
-                    var log = new StringBuilder (length);
-                    GL20.GetProgramInfoLog (program, length, ref length, log);
-                    Console.WriteLine ("GL2" + log.ToString ());
-                }
-
-                GL20.DeleteProgram (program);
-                throw new InvalidOperationException ("Unable to link program");
-            }
-			
-			GL20.UseProgram(program);
-		}
-		
-		private int LoadShader ( All20 type, string source )
-        {
-           int shader = GL20.CreateShader(type);
-
-           if ( shader == 0 )
-                   throw new InvalidOperationException("Unable to create shader");         
-        
-           // Load the shader source
-           int length = 0;
-            GL20.ShaderSource(shader, 1, new string[] {source}, (int[])null);
-           
-           // Compile the shader
-           GL20.CompileShader( shader );
-                
-              int compiled = 0;
-            GL20.GetShader (shader, All20.CompileStatus, ref compiled);
-            if (compiled == 0) {
-                length = 0;
-                GL20.GetShader (shader, All20.InfoLogLength, ref length);
-                if (length > 0) {
-                    var log = new StringBuilder (length);
-                    GL20.GetShaderInfoLog (shader, length, ref length, log);
-                    Console.WriteLine("GL2" + log.ToString ());
-                }
-
-                GL20.DeleteShader (shader);
-                throw new InvalidOperationException ("Unable to compile shader of type : " + type.ToString ());
-            }
-
-            return shader;
-        
-        }
 		
 		public SpriteBatchItem CreateBatchItem()
 		{
@@ -293,6 +198,9 @@ namespace Microsoft.Xna.Framework.Graphics
 			// make sure an old draw isn't still going on.
 			// cross fingers, commenting this out!!
 			//GL.Flush();
+			GL20.EnableVertexAttribArray(attributePosition);
+			GL20.EnableVertexAttribArray(attributeTexCoord);
+			
 			int size = VertexPosition2ColorTexture.GetSize();
 			GL20.VertexAttribPointer(attributePosition,2,All20.Float,false,size,_vertexHandle.AddrOfPinnedObject());
 			GL20.VertexAttribPointer(attributeTexCoord,2,All20.Float,false,size,(IntPtr)((uint)_vertexHandle.AddrOfPinnedObject()+(uint)(sizeof(float)*2+sizeof(uint))));
@@ -314,10 +222,12 @@ namespace Microsoft.Xna.Framework.Graphics
 				// if the texture changed, we need to flush and bind the new texture
 				if ( item.TextureID != texID )
 				{
-//					FlushVertexArray20( startIndex, index );
-//					startIndex = index;
-//					texID = item.TextureID;
-//					GL20.BindTexture ( All20.Texture2D, texID );
+					FlushVertexArray20( startIndex, index );
+					startIndex = index;
+					texID = item.TextureID;
+					GL20.ActiveTexture(All20.Texture0);
+					GL20.BindTexture ( All20.Texture2D, texID );
+					GL20.Uniform1(texID, 0);
 				}
 				// store the SpriteBatchItem data in our vertexArray
 				_vertexArray[index++] = item.vertexTL;

@@ -8,6 +8,7 @@ using All11 = OpenTK.Graphics.ES11.All;
 using All20 = OpenTK.Graphics.ES20.All;
 
 using Microsoft.Xna.Framework;
+using OpenTK;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -22,6 +23,11 @@ namespace Microsoft.Xna.Framework.Graphics
 		RasterizerState _rasterizerState;		
 		Effect _effect;		
 		Matrix _matrix;
+		
+		//OpenGLES2 variables
+		int program;
+		Matrix4 matWorldViewProjection, matProjection, matView, matWorld;
+		int uniformWVP, uniformTex;
 
         public SpriteBatch ( GraphicsDevice graphicsDevice )
 		{
@@ -33,6 +39,133 @@ namespace Microsoft.Xna.Framework.Graphics
 			this.graphicsDevice = graphicsDevice;
 			
 			_batcher = new SpriteBatcher();
+			
+			if (GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
+				InitGL20();
+		}
+		
+		/// <summary>
+		///Initialize shaders and program on OpenGLES2.0 
+		/// </summary>
+		private void InitGL20()
+		{
+			string vertexShaderSrc =  @"uniform mat4 uMVPMatrix;
+										attribute vec4 aPosition; 
+                                        attribute vec2 aTexCoord;
+                                        varying vec2 vTexCoord;
+                                        void main()                  
+                                        {                         
+                                           vTexCoord = aTexCoord;
+                                           gl_Position = uMVPMatrix * aPosition; 
+                                        }";                           
+            
+            string fragmentShaderSrc = @"precision mediump float;
+                                         varying vec2 vTexCoord;
+                                         uniform sampler2D sTexture;
+                                           void main()                                
+                                           {                                         
+                                             //gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+                                             gl_FragColor = texture2D(sTexture, vTexCoord);
+                                           }";
+			
+			int vertexShader = LoadShader (All20.VertexShader, vertexShaderSrc );
+            int fragmentShader = LoadShader (All20.FragmentShader, fragmentShaderSrc );
+            program = GL20.CreateProgram();
+            if (program == 0)
+                throw new InvalidOperationException ("Unable to create program");
+
+            GL20.AttachShader (program, vertexShader);
+            GL20.AttachShader (program, fragmentShader);
+            
+            //Set position
+            GL20.BindAttribLocation (program, _batcher.attributePosition, "aPosition");
+            GL20.BindAttribLocation (program, _batcher.attributeTexCoord, "aTexCoord");
+            
+            
+            GL20.LinkProgram (program);
+
+            int linked = 0;
+            GL20.GetProgram (program, All20.LinkStatus, ref linked);
+            if (linked == 0) {
+                // link failed
+                int length = 0;
+                GL20.GetProgram (program, All20.InfoLogLength, ref length);
+                if (length > 0) {
+                    var log = new StringBuilder (length);
+                    GL20.GetProgramInfoLog (program, length, ref length, log);
+                    Console.WriteLine ("GL2" + log.ToString ());
+                }
+
+                GL20.DeleteProgram (program);
+                throw new InvalidOperationException ("Unable to link program");
+            }
+			
+			matWorld = Matrix4.Identity;
+			matView = Matrix4.CreateRotationZ((float)Math.PI)*
+				      Matrix4.CreateRotationY((float)Math.PI)*
+					  Matrix4.CreateTranslation(-this.graphicsDevice.Viewport.Width/2,
+			                                    this.graphicsDevice.Viewport.Height/2,
+			                                    1);
+			matProjection = Matrix4.CreateOrthographic(this.graphicsDevice.Viewport.Width,
+			                                           this.graphicsDevice.Viewport.Height,
+			                                           -1f,1f);
+			matWorldViewProjection = matWorld * matView * matProjection;
+			
+			GetUniformVariables();
+			
+		}
+		
+		/// <summary>
+		/// Build the shaders
+		/// </summary>
+		private int LoadShader ( All20 type, string source )
+        {
+           int shader = GL20.CreateShader(type);
+
+           if ( shader == 0 )
+                   throw new InvalidOperationException("Unable to create shader");         
+        
+           // Load the shader source
+           int length = 0;
+            GL20.ShaderSource(shader, 1, new string[] {source}, (int[])null);
+           
+           // Compile the shader
+           GL20.CompileShader( shader );
+                
+              int compiled = 0;
+            GL20.GetShader (shader, All20.CompileStatus, ref compiled);
+            if (compiled == 0) {
+                length = 0;
+                GL20.GetShader (shader, All20.InfoLogLength, ref length);
+                if (length > 0) {
+                    var log = new StringBuilder (length);
+                    GL20.GetShaderInfoLog (shader, length, ref length, log);
+                    Console.WriteLine("GL2" + log.ToString ());
+                }
+
+                GL20.DeleteShader (shader);
+                throw new InvalidOperationException ("Unable to compile shader of type : " + type.ToString ());
+            }
+
+            return shader;
+        
+        }
+		
+		private void GetUniformVariables()
+		{
+			uniformWVP =  GL20.GetUniformLocation(program, "uMVPMatrix");
+			uniformTex = GL20.GetUniformLocation(program, "sTexture");
+		}
+		
+		private void SetUniformMatrix4(int location, bool transpose, ref Matrix4 matrix)
+		{
+			unsafe
+			{
+				fixed (float* matrix_ptr = &matrix.Row0.X)
+				{
+					GL20.UniformMatrix4(location,1,transpose,matrix_ptr);
+				}
+			}
 		}
 		
 		public void Begin()
@@ -102,8 +235,16 @@ namespace Microsoft.Xna.Framework.Graphics
 		}
 		
 		private void End20()
-		{
+		{	
+			//CullMode
+			GL20.FrontFace(All20.Cw);
+			GL20.CullFace(All20.Back);
+			GL20.Enable(All20.CullFace);
+			
 			GL20.Viewport(0, 0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height);			// configura el viewport
+			GL20.UseProgram(program);
+			
+			SetUniformMatrix4(uniformWVP, false, ref matWorldViewProjection);
 			
 			_batcher.DrawBatch20 ( _sortMode );
 		}

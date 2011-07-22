@@ -126,7 +126,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			this._format = format;
 			this._mipmap = mipMap;
 			
-			generateOpenGLTexture();
+			texture = new ESImage(width,height);
 		}
 		
 		private void generateOpenGLTexture() 

@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Samples.Waypoint",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Samples.ChaseAndEvade", "Samples\iOS\ChaseAndEvade\MonoGame.Samples.ChaseAndEvade.csproj", "{1557EE13-80AB-4E4C-9C10-9CBFC8E727C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenderTarget2DTest", "Samples\iOS\RenderTarget2D\RenderTarget2DTest.csproj", "{3265D10E-BFE1-4E19-B53B-1D36A36959E1}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StarterKits", "StarterKits", "{ED13CD83-F288-496C-B046-027FA7D36717}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlienGame", "StarterKits\iOS\AlienGame\AlienGame.csproj", "{A18E0228-936A-45CD-91CC-07E01F45677E}"
@@ -111,6 +113,24 @@ Global
 		{296EBAC0-9658-474D-9A9E-5A8F52BA316F}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{296EBAC0-9658-474D-9A9E-5A8F52BA316F}.Release|x86.ActiveCfg = Release|Any CPU
 		{296EBAC0-9658-474D-9A9E-5A8F52BA316F}.Release|x86.Build.0 = Release|Any CPU
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|iPhone.Build.0 = Debug|iPhone
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|x86.ActiveCfg = Debug|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Debug|x86.Build.0 = Debug|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Distribution|iPhone.ActiveCfg = Debug|iPhone
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Distribution|iPhone.Build.0 = Debug|iPhone
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|Any CPU.Build.0 = Release|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|iPhone.ActiveCfg = Release|iPhone
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|iPhone.Build.0 = Release|iPhone
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|x86.ActiveCfg = Release|iPhoneSimulator
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1}.Release|x86.Build.0 = Release|iPhoneSimulator
 		{326DC8E8-649F-4F96-92BA-EE0EF51A32DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{326DC8E8-649F-4F96-92BA-EE0EF51A32DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{326DC8E8-649F-4F96-92BA-EE0EF51A32DB}.Debug|iPhone.ActiveCfg = Debug|iPhone
@@ -431,12 +451,13 @@ Global
 		{326DC8E8-649F-4F96-92BA-EE0EF51A32DB} = {64ED246E-8579-4DF2-A50E-53CC3CCB0E6B}
 		{75E860EE-EBF1-4BB4-AE39-9729900AFD39} = {64ED246E-8579-4DF2-A50E-53CC3CCB0E6B}
 		{1557EE13-80AB-4E4C-9C10-9CBFC8E727C3} = {64ED246E-8579-4DF2-A50E-53CC3CCB0E6B}
+		{3265D10E-BFE1-4E19-B53B-1D36A36959E1} = {64ED246E-8579-4DF2-A50E-53CC3CCB0E6B}
 		{A18E0228-936A-45CD-91CC-07E01F45677E} = {ED13CD83-F288-496C-B046-027FA7D36717}
 		{A3BDF086-7EAA-486F-A90F-78938B7F0A69} = {ED13CD83-F288-496C-B046-027FA7D36717}
 		{296EBAC0-9658-474D-9A9E-5A8F52BA316F} = {ED13CD83-F288-496C-B046-027FA7D36717}
 		{9964D44C-AD60-497E-8ED3-1DE22F53CEED} = {ED13CD83-F288-496C-B046-027FA7D36717}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Samples\iOS\Draw2D\MonoGame.Samples.Draw2D.csproj
+		StartupItem = Samples\iOS\RenderTarget2D\RenderTarget2DTest.csproj
 	EndGlobalSection
 EndGlobal

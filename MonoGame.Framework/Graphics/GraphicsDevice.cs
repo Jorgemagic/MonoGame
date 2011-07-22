@@ -42,7 +42,10 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using OpenTK.Graphics.ES11;
+using GL11 = OpenTK.Graphics.ES11.GL;
+using GL20 = OpenTK.Graphics.ES20.GL;
+using All11 = OpenTK.Graphics.ES11.All;
+using All20 = OpenTK.Graphics.ES20.All;
 
 using Microsoft.Xna.Framework;
 using MonoTouch.OpenGLES;
@@ -51,7 +54,7 @@ namespace Microsoft.Xna.Framework.Graphics
 {	
     public class GraphicsDevice : IDisposable
     {
-		private All _preferedFilter;
+		private All11 _preferedFilter;
 		private int _activeTexture = -1;
 		private Viewport _viewport;
 		
@@ -71,7 +74,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		
 		private RenderTargetBinding[] currentRenderTargets;
 		
-		internal All PreferedFilter 
+		internal All11 PreferedFilter 
 		{
 			get 
 			{
@@ -120,8 +123,8 @@ namespace Microsoft.Xna.Framework.Graphics
         public void Clear(Color color)
         {
 			Vector4 vector = color.ToEAGLColor();			
-			GL.ClearColor (vector.X,vector.Y,vector.Z,1.0f);
-			GL.Clear ((uint) All.ColorBufferBit);
+			GL11.ClearColor (vector.X,vector.Y,vector.Z,1.0f);
+			GL11.Clear ((uint) All11.ColorBufferBit);
         }
 
         public void Clear(ClearOptions options, Color color, float depth, int stencil)
@@ -131,10 +134,10 @@ namespace Microsoft.Xna.Framework.Graphics
 
         public void Clear(ClearOptions options, Vector4 color, float depth, int stencil)
         {
-			GL.ClearColor(color.X, color.Y, color.Z, 1.0f);
-			GL.ClearDepth(depth);
-			GL.ClearStencil(stencil);
-			GL.Clear((uint) (ClearBufferMask.ColorBufferBit| ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit));
+			GL11.ClearColor(color.X, color.Y, color.Z, 1.0f);
+			GL11.ClearDepth(depth);
+			GL11.ClearStencil(stencil);
+			GL11.Clear((uint) (All11.ColorBufferBit| All11.DepthBufferBit | All11.StencilBufferBit));
         }
 
         public void Clear(ClearOptions options, Color color, float depth, int stencil, Rectangle[] regions)
@@ -164,7 +167,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		
         public void Present()
         {
-			GL.Flush();
+			GL11.Flush();
         }
 		
         public void Present(Rectangle? sourceRectangle, Rectangle? destinationRectangle, IntPtr overrideWindowHandle)
@@ -318,19 +321,44 @@ namespace Microsoft.Xna.Framework.Graphics
 			}
 		}
 		
-		public void SetRenderTarget (RenderTarget2D renderTarget)
+		public void SetRenderTarget(RenderTarget2D rendertarget)
+		{
+			if (openGLESVersion == EAGLRenderingAPI.OpenGLES2)
+				SetRenderTargetGL20(rendertarget);
+			else
+				SetRenderTargetGL11(rendertarget);
+		}
+		
+		public void SetRenderTargetGL20 (RenderTarget2D rendertarget)
+		{
+			if (rendertarget == null)
+			{
+				GL20.BindFramebuffer(All20.Framebuffer,0);
+			}
+			else
+			{
+				GL20.BindFramebuffer(All20.Framebuffer, rendertarget.framebuffer);
+				GL20.FramebufferTexture2D(All20.Framebuffer, All20.ColorAttachment0, All20.Texture2D, rendertarget.ID,0);
+		
+				All20 status = GL20.CheckFramebufferStatus(All20.Framebuffer);
+				if (status != All20.FramebufferComplete)
+					throw new Exception("Error creating framebuffer: " + status);
+			}
+		}
+		
+		public void SetRenderTargetGL11 (RenderTarget2D renderTarget)
 		{
 			if (renderTarget == null) 
 			{
 				// Detach the render buffers.
-				GL.Oes.FramebufferRenderbuffer(All.FramebufferOes, All.DepthAttachmentOes,
-						All.RenderbufferOes, 0);
+				GL11.Oes.FramebufferRenderbuffer(All11.FramebufferOes, All11.DepthAttachmentOes,
+						All11.RenderbufferOes, 0);
 				// delete the RBO's
-				GL.Oes.DeleteRenderbuffers(renderBufferIDs.Length,renderBufferIDs);
+				GL11.Oes.DeleteRenderbuffers(renderBufferIDs.Length,renderBufferIDs);
 				// delete the FBO
-				GL.Oes.DeleteFramebuffers(1, ref framebufferId);
+				GL11.Oes.DeleteFramebuffers(1, ref framebufferId);
 				// Set the frame buffer back to the system window buffer
-				GL.Oes.BindFramebuffer(All.FramebufferOes, 0);
+				GL11.Oes.BindFramebuffer(All11.FramebufferOes, 0);
 			}
 			else {
 				SetRenderTargets(new RenderTargetBinding(renderTarget));
@@ -350,34 +378,34 @@ namespace Microsoft.Xna.Framework.Graphics
 				// http://www.songho.ca/opengl/gl_fbo.html
 				
 				// create framebuffer
-				GL.Oes.GenFramebuffers(1, ref framebufferId);
-				GL.Oes.BindFramebuffer(All.FramebufferOes, framebufferId);
+				GL11.Oes.GenFramebuffers(1, ref framebufferId);
+				GL11.Oes.BindFramebuffer(All11.FramebufferOes, framebufferId);
 				
 				renderBufferIDs = new int[currentRenderTargets.Length];
-				GL.Oes.GenRenderbuffers(currentRenderTargets.Length, renderBufferIDs);
+				GL11.Oes.GenRenderbuffers(currentRenderTargets.Length, renderBufferIDs);
 				
 				for (int i = 0; i < currentRenderTargets.Length; i++) {
 					RenderTarget2D target = (RenderTarget2D)currentRenderTargets[0].RenderTarget;
 					
 					// attach the texture to FBO color attachment point
-					GL.Oes.FramebufferTexture2D(All.FramebufferOes, All.ColorAttachment0Oes,
-						All.Texture2D, target.ID,0);
+					GL11.Oes.FramebufferTexture2D(All11.FramebufferOes, All11.ColorAttachment0Oes,
+						All11.Texture2D, target.ID,0);
 					
 					// create a renderbuffer object to store depth info
-					GL.Oes.BindRenderbuffer(All.RenderbufferOes, renderBufferIDs[i]);
-					GL.Oes.RenderbufferStorage(All.RenderbufferOes, All.DepthComponent24Oes,
+					GL11.Oes.BindRenderbuffer(All11.RenderbufferOes, renderBufferIDs[i]);
+					GL11.Oes.RenderbufferStorage(All11.RenderbufferOes, All11.DepthComponent24Oes,
 						target.Width, target.Height);
-					GL.Oes.BindRenderbuffer(All.RenderbufferOes, 0);
+					GL11.Oes.BindRenderbuffer(All11.RenderbufferOes, 0);
 					
 					// attach the renderbuffer to depth attachment point
-					GL.Oes.FramebufferRenderbuffer(All.FramebufferOes, All.DepthAttachmentOes,
-						All.RenderbufferOes, renderBufferIDs[i]);
+					GL11.Oes.FramebufferRenderbuffer(All11.FramebufferOes, All11.DepthAttachmentOes,
+						All11.RenderbufferOes, renderBufferIDs[i]);
 						
 				}
 				
-				All status = GL.Oes.CheckFramebufferStatus(All.FramebufferOes);
+				All11 status = GL11.Oes.CheckFramebufferStatus(All11.FramebufferOes);
 				
-				if (status != All.FramebufferCompleteOes)
+				if (status != All11.FramebufferCompleteOes)
 					throw new Exception("Error creating framebuffer: " + status);
 				//GL.ClearColor (Color4.Transparent);
 				//GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -391,18 +419,18 @@ namespace Microsoft.Xna.Framework.Graphics
 		{
 		}
 		
-        public All PrimitiveTypeGL11(PrimitiveType primitiveType)
+        public All11 PrimitiveTypeGL11(PrimitiveType primitiveType)
         {
             switch (primitiveType)
             {
                 case PrimitiveType.LineList:
-                    return All.Lines;
+                    return All11.Lines;
                 case PrimitiveType.LineStrip:
-                    return All.LineStrip;
+                    return All11.LineStrip;
                 case PrimitiveType.TriangleList:
-                    return All.Triangles;
+                    return All11.Triangles;
                 case PrimitiveType.TriangleStrip:
-                    return All.TriangleStrip;
+                    return All11.TriangleStrip;
             }
 
             throw new NotImplementedException();
@@ -411,13 +439,13 @@ namespace Microsoft.Xna.Framework.Graphics
         public void SetVertexBuffer(VertexBuffer vertexBuffer)
         {
             _vertexBuffer = vertexBuffer;
-            GL.BindBuffer(All.ArrayBuffer, vertexBuffer._bufferStore);
+            GL11.BindBuffer(All11.ArrayBuffer, vertexBuffer._bufferStore);
         }
 
         private void SetIndexBuffer(IndexBuffer indexBuffer)
         {
             _indexBuffer = indexBuffer;
-            GL.BindBuffer(All.ElementArrayBuffer, indexBuffer._bufferStore);
+            GL11.BindBuffer(All11.ElementArrayBuffer, indexBuffer._bufferStore);
         }
 
         public IndexBuffer Indices { set { SetIndexBuffer(value); } }
@@ -431,14 +459,14 @@ namespace Microsoft.Xna.Framework.Graphics
             // Hmm, can the pointer here be changed with baseVertex?
             VertexDeclaration.PrepareForUse(vd, IntPtr.Zero);
 
-            GL.DrawElements(PrimitiveTypeGL11(primitiveType), _indexBuffer._count, All.UnsignedShort, new IntPtr(startIndex));
+            GL11.DrawElements(PrimitiveTypeGL11(primitiveType), _indexBuffer._count, All11.UnsignedShort, new IntPtr(startIndex));
         }
 
         public void DrawUserPrimitives<T>(PrimitiveType primitiveType, T[] vertexData, int vertexOffset, int primitiveCount) where T : struct, IVertexType
         {
             // Unbind the VBOs
-            GL.BindBuffer(All.ArrayBuffer, 0);
-            GL.BindBuffer(All.ElementArrayBuffer, 0);
+            GL11.BindBuffer(All11.ArrayBuffer, 0);
+            GL11.BindBuffer(All11.ElementArrayBuffer, 0);
 			
             var vd = VertexDeclaration.FromType(typeof(T));
 
@@ -449,7 +477,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
             VertexDeclaration.PrepareForUse(vd, arrayStart);
 
-            GL.DrawArrays(PrimitiveTypeGL11(primitiveType), vertexOffset, getElementCountArray(primitiveType, primitiveCount));
+            GL11.DrawArrays(PrimitiveTypeGL11(primitiveType), vertexOffset, getElementCountArray(primitiveType, primitiveCount));
         }
 
         public void DrawPrimitives(PrimitiveType primitiveType, int vertexStart, int primitiveCount)
@@ -457,14 +485,14 @@ namespace Microsoft.Xna.Framework.Graphics
             var vd = VertexDeclaration.FromType(_vertexBuffer._type);
             VertexDeclaration.PrepareForUse(vd, IntPtr.Zero);
 
-            GL.DrawArrays(PrimitiveTypeGL11(primitiveType), vertexStart, getElementCountArray(primitiveType, primitiveCount));
+            GL11.DrawArrays(PrimitiveTypeGL11(primitiveType), vertexStart, getElementCountArray(primitiveType, primitiveCount));
         }
 
         public void DrawUserIndexedPrimitives<T>(PrimitiveType primitiveType, T[] vertexData, int vertexOffset, int vertexCount, int[] indexData, int indexOffset, int primitiveCount) where T : IVertexType
         {
             // Unbind the VBOs
-            GL.BindBuffer(All.ArrayBuffer, 0);
-            GL.BindBuffer(All.ElementArrayBuffer, 0);
+            GL11.BindBuffer(All11.ArrayBuffer, 0);
+            GL11.BindBuffer(All11.ElementArrayBuffer, 0);
 
             var vd = VertexDeclaration.FromType(typeof(T));
 
@@ -475,7 +503,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
             VertexDeclaration.PrepareForUse(vd, arrayStart);
 
-            GL.DrawArrays(PrimitiveTypeGL11(primitiveType), vertexOffset, getElementCountArray(primitiveType, primitiveCount));
+            GL11.DrawArrays(PrimitiveTypeGL11(primitiveType), vertexOffset, getElementCountArray(primitiveType, primitiveCount));
         }
 
         public int getElementCountArray(PrimitiveType primitiveType, int primitiveCount)

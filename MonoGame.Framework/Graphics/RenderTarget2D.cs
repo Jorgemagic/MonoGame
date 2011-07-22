@@ -39,7 +39,10 @@
 #endregion License
 
 using System;
-using OpenTK.Graphics.ES11;
+using GL11 = OpenTK.Graphics.ES11.GL;
+using GL20 = OpenTK.Graphics.ES20.GL;
+using All11 = OpenTK.Graphics.ES11.All;
+using All20 = OpenTK.Graphics.ES20.All;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -47,9 +50,9 @@ namespace Microsoft.Xna.Framework.Graphics
 	{
 		/// <summary>
 		/// Attributes 
-		/// </summary>
-		private Texture2D texture = null;
-		private uint textureFrameBuffer;
+		/// </summary>		
+		internal int framebuffer;
+		
 				
 		public RenderTarget2D (GraphicsDevice graphicsDevice, int width, int height)
 			:this (graphicsDevice,width,height,false,SurfaceFormat.Color, DepthFormat.Depth24,0, RenderTargetUsage.DiscardContents)
@@ -63,10 +66,15 @@ namespace Microsoft.Xna.Framework.Graphics
 		public RenderTarget2D (GraphicsDevice graphicsDevice, int width, int height, bool mipMap,
          					   SurfaceFormat format, DepthFormat depthFormat, int multiSampleCount,
 		                       RenderTargetUsage usage)
-			:base(graphicsDevice, width, height,0, TextureUsage.None, format)
+			:base(graphicsDevice, width, height,false, format)
 		{				
 			
-			allocateOpenGLTexture();
+			if(GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
+			{
+				GL20.GenFramebuffers(1, ref framebuffer);
+			}
+			else
+				allocateOpenGLTexture();
 			
 		}
 		
@@ -76,15 +84,15 @@ namespace Microsoft.Xna.Framework.Graphics
 			// http://steinsoft.net/index.php?site=Programming/Code%20Snippets/OpenGL/no9
 			
 			// Allocate the space needed for the texture
-			GL.BindTexture (All.Texture2D, this.textureId);
+			GL11.BindTexture (All11.Texture2D, this.textureId);
 			
 			// it seems like we do not need to allocate any buffer space
 			//byte[] data = new byte[_width * _height * 4];
 			// Use offset instead of pointer to indictate that we want to use data copied from a PBO 
 			//GL.TexImage2D (TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
-			GL.TexImage2D(All.Texture2D, 0, (int)All.Rgba, _width, _height, 0, All.Rgba, All.UnsignedByte, IntPtr.Zero);
+			GL11.TexImage2D(All11.Texture2D, 0, (int)All11.Rgba, _width, _height, 0, All11.Rgba, All11.UnsignedByte, IntPtr.Zero);
 			
-			GL.BindTexture(All.Texture2D, 0);
+			GL11.BindTexture(All11.Texture2D, 0);
 			//data = null;
 
 		}

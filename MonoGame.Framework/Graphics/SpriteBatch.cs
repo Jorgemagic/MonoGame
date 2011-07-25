@@ -64,8 +64,8 @@ namespace Microsoft.Xna.Framework.Graphics
                                          uniform sampler2D sTexture;
                                            void main()                                
                                            {                                         
-                                             //gl_FragColor = vec4(1.0,0.0,0.0,1.0);
                                              gl_FragColor = texture2D(sTexture, vTexCoord);
+
                                            }";
 			
 			int vertexShader = LoadShader (All20.VertexShader, vertexShaderSrc );
@@ -236,6 +236,28 @@ namespace Microsoft.Xna.Framework.Graphics
 		
 		private void End20()
 		{	
+			// Disable Blending by default = BlendState.Opaque
+			GL20.Disable(All20.Blend);
+			
+			// set the blend mode
+			if ( _blendState == BlendState.NonPremultiplied )
+			{
+				GL20.BlendFunc(All20.One, All20.OneMinusSrcAlpha);
+				GL20.Enable(All20.Blend);
+			}
+			
+			if ( _blendState == BlendState.AlphaBlend )
+			{
+				GL20.BlendFunc(All20.SrcAlpha, All20.OneMinusSrcAlpha);
+				GL20.Enable(All20.Blend);				
+			}
+			
+			if ( _blendState == BlendState.Additive )
+			{
+				GL20.BlendFunc(All20.SrcAlpha,All20.One);
+				GL20.Enable(All20.Blend);	
+			}			
+			
 			//CullMode
 			GL20.FrontFace(All20.Cw);
 			GL20.CullFace(All20.Back);

@@ -131,7 +131,7 @@ namespace Microsoft.Xna.Framework
 				GraphicsDevice.openGLESVersion = EAGLRenderingAPI.OpenGLES1;
 				base.CreateFrameBuffer();
 		    }
-			
+			GraphicsDevice.framebufferScreen = this.Framebuffer;
 			
 		}
 		

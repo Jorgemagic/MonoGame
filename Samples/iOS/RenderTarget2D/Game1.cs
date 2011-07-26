@@ -57,7 +57,7 @@ namespace RenderTarget2DTest
 			                                  this.graphics.GraphicsDevice.Viewport.Height,false,
 			                                  SurfaceFormat.Color,DepthFormat.Depth24);
 			
-			CreateRender();
+			
 		}
 
 		/// <summary>
@@ -91,7 +91,7 @@ namespace RenderTarget2DTest
 		/// <param name="gameTime">Provides a snapshot of timing values.</param>
 		protected override void Draw (GameTime gameTime)
 		{
-			/*graphics.GraphicsDevice.SetRenderTarget(renderTarget);
+			graphics.GraphicsDevice.SetRenderTarget(renderTarget);
 			
 			GraphicsDevice.Clear(Color.Red);
 			
@@ -100,7 +100,7 @@ namespace RenderTarget2DTest
 			spriteBatch.End();
 			
 			GraphicsDevice.SetRenderTarget(null);
-			*/
+			
 			graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 			
 			spriteBatch.Begin();

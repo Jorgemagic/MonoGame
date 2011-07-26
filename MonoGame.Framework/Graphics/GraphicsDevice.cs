@@ -70,7 +70,8 @@ namespace Microsoft.Xna.Framework.Graphics
         public DepthStencilState DepthStencilState { get; set; }
 		public BlendState BlendState { get; set; }
 		
-		public static EAGLRenderingAPI openGLESVersion;
+		public static EAGLRenderingAPI openGLESVersion;	
+		public static int framebufferScreen;
 		
 		private RenderTargetBinding[] currentRenderTargets;
 		
@@ -333,7 +334,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		{
 			if (rendertarget == null)
 			{
-				GL20.BindFramebuffer(All20.Framebuffer,0);
+				GL20.BindFramebuffer(All20.Framebuffer,framebufferScreen);
 			}
 			else
 			{

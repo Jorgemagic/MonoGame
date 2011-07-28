@@ -6,6 +6,7 @@ namespace Microsoft.Xna.Framework.Graphics
 	{
 		public int TextureID;
 		public float Depth;
+		public Color Tint;
 		public VertexPosition2ColorTexture vertexTL;
 		public VertexPosition2ColorTexture vertexTR;
 		public VertexPosition2ColorTexture vertexBL;
@@ -20,6 +21,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		
 		public void Set ( float x, float y, float w, float h, Color color, Vector2 texCoordTL, Vector2 texCoordBR )
 		{
+			this.Tint = color;
 			vertexTL.Position = new Vector2(x,y);
 			vertexTL.Color = color.GLPackedValue;
 			vertexTL.TextureCoordinate = texCoordTL;
@@ -38,6 +40,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		}
 		public void Set ( float x, float y, float dx, float dy, float w, float h, float sin, float cos, Color color, Vector2 texCoordTL, Vector2 texCoordBR )
 		{
+			this.Tint = color;
 			vertexTL.Position = new Vector2(x+dx*cos-dy*sin,y+dx*sin+dy*cos);
 			vertexTL.Color = color.GLPackedValue;
 			vertexTL.TextureCoordinate = texCoordTL;

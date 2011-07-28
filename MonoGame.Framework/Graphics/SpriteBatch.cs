@@ -52,19 +52,24 @@ namespace Microsoft.Xna.Framework.Graphics
 			string vertexShaderSrc =  @"uniform mat4 uMVPMatrix;
 										attribute vec4 aPosition; 
                                         attribute vec2 aTexCoord;
+										attribute vec4 aTint;
                                         varying vec2 vTexCoord;
+										varying vec4 vTint;
                                         void main()                  
                                         {                         
                                            vTexCoord = aTexCoord;
+										   vTint = aTint;
                                            gl_Position = uMVPMatrix * aPosition; 
                                         }";                           
             
             string fragmentShaderSrc = @"precision mediump float;
                                          varying vec2 vTexCoord;
+										 varying vec4 vTint;
                                          uniform sampler2D sTexture;
                                            void main()                                
                                            {                                         
-                                             gl_FragColor = texture2D(sTexture, vTexCoord);
+                                             vec4 baseColor = texture2D(sTexture, vTexCoord);
+											 gl_FragColor = baseColor * vTint;
 
                                            }";
 			
@@ -80,7 +85,7 @@ namespace Microsoft.Xna.Framework.Graphics
             //Set position
             GL20.BindAttribLocation (program, _batcher.attributePosition, "aPosition");
             GL20.BindAttribLocation (program, _batcher.attributeTexCoord, "aTexCoord");
-            
+            GL20.BindAttribLocation (program, _batcher.attributeTint, "aTint");
             
             GL20.LinkProgram (program);
 

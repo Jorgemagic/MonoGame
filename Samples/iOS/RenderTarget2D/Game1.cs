@@ -103,7 +103,7 @@ namespace RenderTarget2DTest
 			graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 			
 			spriteBatch.Begin();
-			spriteBatch.Draw(renderTarget, new Vector2(200,200),Color.White);
+			spriteBatch.Draw(renderTarget, new Vector2(200,200),Color.Green);
 
 			spriteBatch.End();
 			

@@ -63,6 +63,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		//OpenGL2.0 Attributes
 		public int attributePosition = 0;
 		public int attributeTexCoord = 1;
+		public int attributeTint = 2;
 
 		public SpriteBatcher ()
 		{
@@ -219,6 +220,11 @@ namespace Microsoft.Xna.Framework.Graphics
 			
 			foreach ( SpriteBatchItem item in _batchItemList )
 			{
+				//Tint Color
+				Vector4 vtint = item.Tint.ToVector4();
+				vtint /= 255;
+				GL20.VertexAttrib4(attributeTint,vtint.X, vtint.Y, vtint.Z, vtint.W);
+				
 				// if the texture changed, we need to flush and bind the new texture
 				if ( item.TextureID != texID )
 				{

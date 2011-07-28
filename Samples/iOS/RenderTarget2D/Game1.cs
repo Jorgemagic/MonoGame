@@ -92,7 +92,7 @@ namespace RenderTarget2DTest
 		{
 			graphics.GraphicsDevice.SetRenderTarget(renderTarget);
 			
-			GraphicsDevice.Clear(Color.Red);
+			GraphicsDevice.Clear(Color.Transparent);
 			
 			spriteBatch.Begin();
 			spriteBatch.Draw(texture, Vector2.Zero,Color.White);
@@ -103,8 +103,8 @@ namespace RenderTarget2DTest
 			graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 			
 			spriteBatch.Begin();
-			spriteBatch.Draw(renderTarget, new Vector2(200,200),Color.Green);
-
+			spriteBatch.Draw(renderTarget, Vector2.Zero,Color.White);
+			spriteBatch.Draw(texture,new Vector2(300,300), Color.White);
 			spriteBatch.End();
 			
 			base.Draw (gameTime);

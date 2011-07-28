@@ -254,18 +254,21 @@ namespace Microsoft.Xna.Framework.Graphics
 			{
 				GL20.BlendFunc(All20.One, All20.OneMinusSrcAlpha);
 				GL20.Enable(All20.Blend);
+				GL20.BlendEquation(All20.FuncAdd);
 			}
 			
 			if ( _blendState == BlendState.AlphaBlend )
 			{
 				GL20.BlendFunc(All20.SrcAlpha, All20.OneMinusSrcAlpha);
-				GL20.Enable(All20.Blend);				
+				GL20.Enable(All20.Blend);
+				GL20.BlendEquation(All20.FuncAdd);
 			}
 			
 			if ( _blendState == BlendState.Additive )
 			{
 				GL20.BlendFunc(All20.SrcAlpha,All20.One);
 				GL20.Enable(All20.Blend);	
+				GL20.BlendEquation(All20.FuncAdd);
 			}			
 			
 			//CullMode
@@ -285,6 +288,8 @@ namespace Microsoft.Xna.Framework.Graphics
 			{
 				GL20.CullFace(All20.Front);
 				SetUniformMatrix4(uniformWVP,false,ref matWVPFramebuffer);
+				GL20.ClearColor(0.0f,0.0f,0.0f,0.0f);
+				GL20.Clear((int) (All20.ColorBufferBit | All20.DepthBufferBit));
 			}
 			
 			_batcher.DrawBatch20 ( _sortMode );

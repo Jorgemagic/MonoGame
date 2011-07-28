@@ -198,7 +198,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			
 			// make sure an old draw isn't still going on.
 			// cross fingers, commenting this out!!
-			//GL.Flush();
+			//GL20.Flush();
 			GL20.EnableVertexAttribArray(attributePosition);
 			GL20.EnableVertexAttribArray(attributeTexCoord);
 			
@@ -213,6 +213,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			int startIndex = 0;
 			int index = 0;
 			int texID = -1;
+			Color lastTint =  new Color(0.0f,0.0f,0.0f,0.0f);
 
 			// make sure the vertexArray has enough space
 			if ( _batchItemList.Count*4 > _vertexArray.Length )
@@ -223,17 +224,19 @@ namespace Microsoft.Xna.Framework.Graphics
 				//Tint Color
 				Vector4 vtint = item.Tint.ToVector4();
 				vtint /= 255;
-				GL20.VertexAttrib4(attributeTint,vtint.X, vtint.Y, vtint.Z, vtint.W);
+//				GL20.VertexAttrib4(attributeTint,vtint.X, vtint.Y, vtint.Z, vtint.W);
 				
 				// if the texture changed, we need to flush and bind the new texture
-				if ( item.TextureID != texID )
+				if ( item.TextureID != texID || item.Tint != lastTint)
 				{
 					FlushVertexArray20( startIndex, index );
 					startIndex = index;
 					texID = item.TextureID;
+					lastTint = item.Tint;
 					GL20.ActiveTexture(All20.Texture0);
 					GL20.BindTexture ( All20.Texture2D, texID );
 					GL20.Uniform1(texID, 0);
+					GL20.VertexAttrib4(attributeTint,vtint.X, vtint.Y, vtint.Z, vtint.W);
 				}
 				// store the SpriteBatchItem data in our vertexArray
 				_vertexArray[index++] = item.vertexTL;

@@ -26,7 +26,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		
 		//OpenGLES2 variables
 		int program;
-		Matrix4 matWorldViewProjection, matProjection, matView, matWorld;
+		Matrix4 matWVPScreen, matWVPFramebuffer, matProjection, matViewScreen, matViewFramebuffer, matWorld;
 		int uniformWVP, uniformTex;
 
         public SpriteBatch ( GraphicsDevice graphicsDevice )
@@ -101,15 +101,20 @@ namespace Microsoft.Xna.Framework.Graphics
             }
 			
 			matWorld = Matrix4.Identity;
-			matView = Matrix4.CreateRotationZ((float)Math.PI)*
+			matViewScreen = Matrix4.CreateRotationZ((float)Math.PI)*
 				      Matrix4.CreateRotationY((float)Math.PI)*
 					  Matrix4.CreateTranslation(-this.graphicsDevice.Viewport.Width/2,
 			                                    this.graphicsDevice.Viewport.Height/2,
 			                                    1);
+			matViewFramebuffer = Matrix4.CreateTranslation(-this.graphicsDevice.Viewport.Width/2,
+			                                          -this.graphicsDevice.Viewport.Height/2,
+			                                          1);
 			matProjection = Matrix4.CreateOrthographic(this.graphicsDevice.Viewport.Width,
 			                                           this.graphicsDevice.Viewport.Height,
 			                                           -1f,1f);
-			matWorldViewProjection = matWorld * matView * matProjection;
+			
+			matWVPScreen = matWorld * matViewScreen * matProjection;
+			matWVPFramebuffer = matWorld * matViewFramebuffer * matProjection;
 			
 			GetUniformVariables();
 			
@@ -260,13 +265,22 @@ namespace Microsoft.Xna.Framework.Graphics
 			
 			//CullMode
 			GL20.FrontFace(All20.Cw);
-			GL20.CullFace(All20.Back);
+
 			GL20.Enable(All20.CullFace);
 			
 			GL20.Viewport(0, 0, this.graphicsDevice.Viewport.Width, this.graphicsDevice.Viewport.Height);			// configura el viewport
 			GL20.UseProgram(program);
 			
-			SetUniformMatrix4(uniformWVP, false, ref matWorldViewProjection);
+			if (GraphicsDevice.defaultFramebuffer)
+			{
+				GL20.CullFace(All20.Back);
+				SetUniformMatrix4(uniformWVP, false, ref matWVPScreen);
+			}
+			else
+			{
+				GL20.CullFace(All20.Front);
+				SetUniformMatrix4(uniformWVP,false,ref matWVPFramebuffer);
+			}
 			
 			_batcher.DrawBatch20 ( _sortMode );
 		}

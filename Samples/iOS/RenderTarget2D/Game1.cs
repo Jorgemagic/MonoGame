@@ -53,8 +53,7 @@ namespace RenderTarget2DTest
 			
 			texture = Content.Load<Texture2D>("cat.png");
 			
-			renderTarget = new RenderTarget2D(graphics.GraphicsDevice, this.graphics.GraphicsDevice.Viewport.Width,
-			                                  this.graphics.GraphicsDevice.Viewport.Height,false,
+			renderTarget = new RenderTarget2D(graphics.GraphicsDevice, 100,100,false,
 			                                  SurfaceFormat.Color,DepthFormat.Depth24);
 			
 			
@@ -96,7 +95,7 @@ namespace RenderTarget2DTest
 			GraphicsDevice.Clear(Color.Red);
 			
 			spriteBatch.Begin();
-			spriteBatch.Draw(texture, Vector2.Zero, Color.White);
+			spriteBatch.Draw(texture, Vector2.Zero,Color.White);
 			spriteBatch.End();
 			
 			GraphicsDevice.SetRenderTarget(null);
@@ -104,10 +103,13 @@ namespace RenderTarget2DTest
 			graphics.GraphicsDevice.Clear(Color.CornflowerBlue);
 			
 			spriteBatch.Begin();
-			spriteBatch.Draw(renderTarget, Vector2.Zero, Color.White);
+			spriteBatch.Draw(renderTarget, new Vector2(200,200),Color.White);
+
 			spriteBatch.End();
 			
 			base.Draw (gameTime);
+			
+			
 		}
 	}
 }

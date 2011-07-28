@@ -72,6 +72,7 @@ namespace Microsoft.Xna.Framework.Graphics
 		
 		public static EAGLRenderingAPI openGLESVersion;	
 		public static int framebufferScreen;
+		public static bool defaultFramebuffer = true;
 		
 		private RenderTargetBinding[] currentRenderTargets;
 		
@@ -335,6 +336,7 @@ namespace Microsoft.Xna.Framework.Graphics
 			if (rendertarget == null)
 			{
 				GL20.BindFramebuffer(All20.Framebuffer,framebufferScreen);
+				defaultFramebuffer = true;
 			}
 			else
 			{
@@ -344,6 +346,7 @@ namespace Microsoft.Xna.Framework.Graphics
 				All20 status = GL20.CheckFramebufferStatus(All20.Framebuffer);
 				if (status != All20.FramebufferComplete)
 					throw new Exception("Error creating framebuffer: " + status);
+				defaultFramebuffer = false;
 			}
 		}
 		

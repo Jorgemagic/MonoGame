@@ -157,7 +157,7 @@ namespace Microsoft.Xna.Framework
 			_lastUpdate = DateTime.Now;
 			
 			// Get the Accelerometer going
-			Accelerometer.SetupAccelerometer();
+			//Accelerometer.SetupAccelerometer(); // FIXME: Accelerometer breaks the applications with a random NullPointerException 
         
             view.Run(FramesPerSecond / (FramesPerSecond * TargetElapsedTime.TotalSeconds));	
         }

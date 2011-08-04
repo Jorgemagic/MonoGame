@@ -39,7 +39,7 @@ purpose and non-infringement.
 #endregion License
 
 using System;
-using MonoTouch.UIKit;
+//using MonoTouch.UIKit;
 using OpenTK.Graphics.ES11;
 using System.Drawing;
 

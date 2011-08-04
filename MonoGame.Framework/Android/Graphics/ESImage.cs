@@ -40,6 +40,7 @@ purpose and non-infringement.
 
 using System;
 using Android.Graphics;
+using System.Drawing;
 using OpenTK.Graphics.ES11;
 
 namespace Microsoft.Xna.Framework.Graphics
@@ -89,37 +90,54 @@ namespace Microsoft.Xna.Framework.Graphics
 			textureOffsetY = 0;
 		}
 
+        public ESImage(IntPtr data, int width, int height)
+        {
+            texture = new ESTexture2D(data, SurfaceFormat.Color, width, height, new Size(width, height), All.Nearest);
+            Initialize(1.0f);
+        }
+
 		public ESImage(ESTexture2D tex)
 		{
 			texture = tex;
 			Initialize(1.0f);
 		}
 
+        public ESImage(int width, int height)
+        {
+            texture = new ESTexture2D(IntPtr.Zero, SurfaceFormat.Color, width, height, new Size(width, height), All.Linear);
+            imageWidth = textureWidth = width;
+            imageHeight = textureHeight = height;
+            texWidthRatio = 1.0f / width;
+            texHeightRatio = 1.0f / height;
+            textureOffsetX = 0;
+            textureOffsetY = 0;
+        }
+
 		public ESImage(ESTexture2D tex, float imageScale)
 		{
 			texture = tex;
 			Initialize(1.0f);
 		}
-		
-		public ESImage(Bitmap image)
-		{
-			// By default set the scale to 1.0f and the filtering to GL_NEAREST
-			texture = new ESTexture2D(image,All.Nearest);
-            Initialize(1.0f);			
-		}
+
+        public ESImage(Bitmap image)
+        {
+            // By default set the scale to 1.0f and the filtering to GL_NEAREST
+            texture = new ESTexture2D(image, All.Nearest);
+            Initialize(1.0f);
+        }
 
         public ESImage(Bitmap image, All filter)
-		{			
-			// By default set the scale to 1.0f
-			texture = new ESTexture2D(image,filter);
+        {
+            // By default set the scale to 1.0f
+            texture = new ESTexture2D(image, filter);
             Initialize(1.0f);
-		}
+        }
 
         public ESImage(Bitmap image, float imageScale, All filter)
-		{
-			texture = new ESTexture2D(image,filter);
+        {
+            texture = new ESTexture2D(image, filter);
             Initialize(imageScale);
-		}
+        }
 		
 				
 		public int TextureOffsetX 
@@ -184,10 +202,20 @@ namespace Microsoft.Xna.Framework.Graphics
 	
 			return subImage;
 		}
-		public Vector2 GetTextureCoord ( int x, int y )
+		
+		public float GetTextureCoordX( int x )
 		{
-			return new Vector2(x*texWidthRatio,y*texHeightRatio);
+			return (x*texWidthRatio);
 		}
+		
+		public float GetTextureCoordY( int y )
+		{
+			return (y*texHeightRatio);
+		}
+        public Vector2 GetTextureCoord(int x, int y)
+        {
+            return new Vector2(x * texWidthRatio, y * texHeightRatio);
+        }
 		public Vector2[] GetTextureCoordinates(Rectangle textureRect)
 		{
 			Vector2[] coordinates = new Vector2[4];

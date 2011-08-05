@@ -142,7 +142,13 @@ namespace Microsoft.Xna.Framework.Content
                     //Basically the same as Texture2D.FromFile but loading from the assets instead of a filePath
                     Stream assetStream = Game.contextInstance.Assets.Open(assetName);
                     Bitmap image = BitmapFactory.DecodeStream(assetStream);
-                    ESImage theTexture = new ESImage(image, graphicsDeviceService.GraphicsDevice.PreferedFilter);
+                    ESImage theTexture;
+                        
+                    if(GraphicsDevice.openGLESVersion== OpenTK.Graphics.GLContextVersion.Gles2_0)
+                        theTexture = new ESImage(image, graphicsDeviceService.GraphicsDevice.PreferedFilterGL20);
+                    else
+                        theTexture = new ESImage(image, graphicsDeviceService.GraphicsDevice.PreferedFilterGL11);
+
                     result = new Texture2D(theTexture) { Name = Path.GetFileNameWithoutExtension(assetName) };
 				}
 				if ((typeof(T) == typeof(SpriteFont)))

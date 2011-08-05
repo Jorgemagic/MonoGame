@@ -43,6 +43,7 @@ using GL11 = OpenTK.Graphics.ES11.GL;
 using GL20 = OpenTK.Graphics.ES20.GL;
 using All11 = OpenTK.Graphics.ES11.All;
 using All20 = OpenTK.Graphics.ES20.All;
+using OpenTK.Graphics;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -70,11 +71,12 @@ namespace Microsoft.Xna.Framework.Graphics
         {
 
             //if (GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
-            //{
+            if (GraphicsDevice.openGLESVersion ==  GLContextVersion.Gles2_0)
+            {
                 GL20.GenFramebuffers(1, ref framebuffer);
-            //}
-            //else
-            //    allocateOpenGLTexture();
+            }
+            else
+                allocateOpenGLTexture();
 
         }
 

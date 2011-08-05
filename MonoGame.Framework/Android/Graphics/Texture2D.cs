@@ -43,7 +43,8 @@ using System;
 using System.Drawing;
 using Android.Graphics;
 using Microsoft.Xna.Framework.Content;
-using OpenTK.Graphics.ES11;
+using GL11 = OpenTK.Graphics.ES11;
+using GL20 = OpenTK.Graphics.ES20;
 using Path = System.IO.Path;
 
 namespace Microsoft.Xna.Framework.Graphics
@@ -122,20 +123,20 @@ namespace Microsoft.Xna.Framework.Graphics
             texture = new ESImage(width, height);
 		}
 		
-		private void generateOpenGLTexture() 
-		{
-			// modeled after this
-			// http://steinsoft.net/index.php?site=Programming/Code%20Snippets/OpenGL/no9
+        //private void generateOpenGLTexture() 
+        //{
+        //    // modeled after this
+        //    // http://steinsoft.net/index.php?site=Programming/Code%20Snippets/OpenGL/no9
 			
-			GL.GenTextures(1,ref textureId);
-			GL.BindTexture(All.Texture2D, textureId);
+        //    GL.GenTextures(1,ref textureId);
+        //    GL.BindTexture(All.Texture2D, textureId);
 			
-			GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Linear);
-			GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Linear);
+        //    GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Linear);
+        //    GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Linear);
 			
-			GL.BindTexture(All.Texture2D, 0);
+        //    GL.BindTexture(All.Texture2D, 0);
 			
-		}
+        //}
 
         public Color GetPixel(int x, int y)
         {
@@ -184,8 +185,12 @@ namespace Microsoft.Xna.Framework.Graphics
 			{
 				throw new ContentLoadException("Error loading Texture2D Stream");
 			}
-			
-			ESImage theTexture = new ESImage(image, graphicsDevice.PreferedFilter);			
+			ESImage theTexture ;
+            if(GraphicsDevice.openGLESVersion == OpenTK.Graphics.GLContextVersion.Gles2_0)
+                theTexture = new ESImage(image, graphicsDevice.PreferedFilterGL20);			
+            else
+                theTexture = new ESImage(image, graphicsDevice.PreferedFilterGL11);			
+
 			Texture2D result = new Texture2D(theTexture);
 			
 			return result;
@@ -212,7 +217,12 @@ namespace Microsoft.Xna.Framework.Graphics
 				throw new ContentLoadException("Error loading file: " + filename);
 			}
 			
-			ESImage theTexture = new ESImage(image, graphicsDevice.PreferedFilter);
+            ESImage theTexture;
+            if(GraphicsDevice.openGLESVersion == OpenTK.Graphics.GLContextVersion.Gles2_0)
+			    theTexture = new ESImage(image, graphicsDevice.PreferedFilterGL20);
+            else
+                theTexture = new ESImage(image, graphicsDevice.PreferedFilterGL11);
+
 			Texture2D result = new Texture2D(theTexture);
 			result.Name = Path.GetFileNameWithoutExtension(filename);
 			return result;

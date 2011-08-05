@@ -41,7 +41,8 @@ purpose and non-infringement.
 using System;
 using Android.Content.PM;
 using Android.Views;
-using OpenTK.Graphics.ES11;
+using GL11 = OpenTK.Graphics.ES11;
+using GL20 = OpenTK.Graphics.ES20;
 
 using Microsoft.Xna.Framework.Graphics;
 
@@ -132,11 +133,13 @@ namespace Microsoft.Xna.Framework
 
 			if (_preferMultiSampling) 
 			{
-				_graphicsDevice.PreferedFilter = All.Linear;
+                    _graphicsDevice.PreferedFilterGL20 = GL20.All.Linear;
+                    _graphicsDevice.PreferedFilterGL11 = GL11.All.Linear;
 			}
 			else 
 			{
-				_graphicsDevice.PreferedFilter = All.Nearest;
+                    _graphicsDevice.PreferedFilterGL20 = GL20.All.Nearest;
+				    _graphicsDevice.PreferedFilterGL11 = GL11.All.Nearest;
 			}
 		}
 		
@@ -182,11 +185,13 @@ namespace Microsoft.Xna.Framework
 				_preferMultiSampling = value;
 				if (_preferMultiSampling) 
 				{
-					_graphicsDevice.PreferedFilter = All.Linear;
+					_graphicsDevice.PreferedFilterGL11 = GL11.All.Linear;
+                    _graphicsDevice.PreferedFilterGL20 = GL20.All.Linear;
 				}
 				else 
 				{
-					_graphicsDevice.PreferedFilter = All.Nearest;
+					_graphicsDevice.PreferedFilterGL11 = GL11.All.Nearest;
+                    _graphicsDevice.PreferedFilterGL20 = GL20.All.Nearest;
 				}
             }
         }

@@ -32,7 +32,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Drawing;
 using Android.Util;
-using OpenTK.Graphics.ES11;
+using GL11 = OpenTK.Graphics.ES11;
+using GL20 = OpenTK.Graphics.ES20;
 
 using Microsoft.Xna;
 using Microsoft.Xna.Framework;
@@ -48,28 +49,29 @@ namespace Microsoft.Xna.Framework.Content
             // Do nothing
         }
 
-		public static string Normalize(string FileName)
-		{
-		    int index = FileName.LastIndexOf(Path.DirectorySeparatorChar);
-		    string path = string.Empty;
-		    string file = FileName;
-            if (index >= 0) {
+        public static string Normalize(string FileName)
+        {
+            int index = FileName.LastIndexOf(Path.DirectorySeparatorChar);
+            string path = string.Empty;
+            string file = FileName;
+            if (index >= 0)
+            {
                 file = FileName.Substring(index + 1, FileName.Length - index - 1);
                 path = FileName.Substring(0, index);
             }
-		    string[] files = Game.contextInstance.Assets.List(path);
+            string[] files = Game.contextInstance.Assets.List(path);
 
             if (Contains(file, files))
-				return FileName;
-			
-			// Check the file extension
-			if (!string.IsNullOrEmpty(Path.GetExtension(FileName)))
-			{
-				return null;
-			}
-		
+                return FileName;
+
+            // Check the file extension
+            if (!string.IsNullOrEmpty(Path.GetExtension(FileName)))
+            {
+                return null;
+            }
+
             return Path.Combine(path, TryFindAnyCased(file, files, ".xnb", ".jpg", ".bmp", ".jpeg", ".png", ".gif"));
-		}
+        }
 
         private static string TryFindAnyCased(string search, string[] arr, params string[] extensions)
         {
@@ -82,39 +84,44 @@ namespace Microsoft.Xna.Framework.Content
         }
 
         protected internal override Texture2D Read(ContentReader reader, Texture2D existingInstance)
-		{
-			
-			Texture2D texture = null;
-			
-			SurfaceFormat surfaceFormat = (SurfaceFormat)reader.ReadInt32 ();
-			int width = reader.ReadInt32();
-			int height = reader.ReadInt32();
-			int levelCount = reader.ReadInt32();
-			int imageLength = reader.ReadInt32();
-						
-			byte[] imageData = reader.ReadBytes(imageLength);
-			
-			switch(surfaceFormat)
-			{
-				case SurfaceFormat.Dxt1: imageData = DxtUtil.DecompressDxt1(imageData, width, height); break;
-				case SurfaceFormat.Dxt3: imageData = DxtUtil.DecompressDxt3(imageData, width, height); break;
-			}				
-			
-			IntPtr imagePtr = IntPtr.Zero;
-			
-			try 
-			{
-				imagePtr = Marshal.AllocHGlobal (imageData.Length);
-				Marshal.Copy (imageData, 0, imagePtr, imageData.Length);					
-				ESTexture2D esTexture = new ESTexture2D (imagePtr, surfaceFormat, width, height, new Size (width, height), All.Linear);
-				texture = new Texture2D (new ESImage (esTexture));
-			}
-			finally 
-			{		
-				Marshal.FreeHGlobal (imagePtr);
-			}			
-			
-			return texture;
-		}
+        {
+
+            Texture2D texture = null;
+
+            SurfaceFormat surfaceFormat = (SurfaceFormat)reader.ReadInt32();
+            int width = reader.ReadInt32();
+            int height = reader.ReadInt32();
+            int levelCount = reader.ReadInt32();
+            int imageLength = reader.ReadInt32();
+
+            byte[] imageData = reader.ReadBytes(imageLength);
+
+            switch (surfaceFormat)
+            {
+                case SurfaceFormat.Dxt1: imageData = DxtUtil.DecompressDxt1(imageData, width, height); break;
+                case SurfaceFormat.Dxt3: imageData = DxtUtil.DecompressDxt3(imageData, width, height); break;
+            }
+
+            IntPtr imagePtr = IntPtr.Zero;
+
+            try
+            {
+                imagePtr = Marshal.AllocHGlobal(imageData.Length);
+                Marshal.Copy(imageData, 0, imagePtr, imageData.Length);
+                ESTexture2D esTexture;
+                if (GraphicsDevice.openGLESVersion == OpenTK.Graphics.GLContextVersion.Gles2_0)
+                    esTexture = new ESTexture2D(imagePtr, surfaceFormat, width, height, new Size(width, height), GL20.All.Linear);
+                else
+                    esTexture = new ESTexture2D(imagePtr, surfaceFormat, width, height, new Size(width, height), GL11.All.Linear);
+
+                texture = new Texture2D(new ESImage(esTexture));
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(imagePtr);
+            }
+
+            return texture;
+        }
     }
 }

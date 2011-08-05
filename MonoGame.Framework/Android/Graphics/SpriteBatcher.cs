@@ -223,9 +223,7 @@ namespace Microsoft.Xna.Framework.Graphics
             {
                 //Tint Color
                 Vector4 vtint = item.Tint.ToVector4();
-                vtint /= 255; // TODO: en Android esta normalización no funciona, siempre obtiene valores cercanos a 0 para el color.
-
-                //				GL20.VertexAttrib4(attributeTint,vtint.X, vtint.Y, vtint.Z, vtint.W);
+                vtint /= 255; 
 
                 // if the texture changed, we need to flush and bind the new texture
                 if (item.TextureID != texID || item.Tint != lastTint)

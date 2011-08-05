@@ -6,6 +6,7 @@ using GL11 = OpenTK.Graphics.ES11.GL;
 using GL20 = OpenTK.Graphics.ES20.GL;
 using All11 = OpenTK.Graphics.ES11.All;
 using All20 = OpenTK.Graphics.ES20.All;
+using OpenTK.Graphics;
 
 using Microsoft.Xna.Framework;
 using OpenTK;
@@ -41,7 +42,8 @@ namespace Microsoft.Xna.Framework.Graphics
             _batcher = new SpriteBatcher();
 
             //if (GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
-            InitGL20();
+            if (GraphicsDevice.openGLESVersion == GLContextVersion.Gles2_0)
+                InitGL20();
         }
 
         /// <summary>
@@ -250,9 +252,10 @@ namespace Microsoft.Xna.Framework.Graphics
         public void End()
         {
             //if (GraphicsDevice.openGLESVersion == MonoTouch.OpenGLES.EAGLRenderingAPI.OpenGLES2)
-            End20();
-            //else
-            //    End11();
+            if (GraphicsDevice.openGLESVersion ==  GLContextVersion.Gles2_0)
+                End20();
+            else
+                End11();
         }
 
         private void End20()

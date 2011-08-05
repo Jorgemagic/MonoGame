@@ -50,12 +50,14 @@ using All20 = OpenTK.Graphics.ES20.All;
 using Android.Opengl;
 
 using Microsoft.Xna.Framework;
+using OpenTK.Graphics;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
     public class GraphicsDevice : IDisposable
     {
-        private All11 _preferedFilter;
+        private All11 _preferedFilterGL11;
+        private All20 _preferedFilterGL20;
         private int _activeTexture = -1;
         private Viewport _viewport;
 
@@ -70,22 +72,35 @@ namespace Microsoft.Xna.Framework.Graphics
         public RasterizerState RasterizerState { get; set; }
         public DepthStencilState DepthStencilState { get; set; }
         public BlendState BlendState { get; set; }
-       
+
+        public static GLContextVersion openGLESVersion;
         //public static EAGLRenderingAPI openGLESVersion;
         public static int framebufferScreen;
         public static bool defaultFramebuffer = true;
 
         private RenderTargetBinding[] currentRenderTargets;
 
-        internal All11 PreferedFilter
+        internal All11 PreferedFilterGL11
         {
             get
             {
-                return _preferedFilter;
+                return _preferedFilterGL11;
             }
             set
             {
-                _preferedFilter = value;
+                _preferedFilterGL11 = value;
+            }
+        }
+
+        internal All20 PreferedFilterGL20
+        {
+            get
+            {
+                return _preferedFilterGL20;
+            }
+            set
+            {
+                _preferedFilterGL20 = value;
             }
 
         }
@@ -128,8 +143,16 @@ namespace Microsoft.Xna.Framework.Graphics
         public void Clear(Color color)
         {
             Vector4 vector = color.ToEAGLColor();
-            GL11.ClearColor(vector.X, vector.Y, vector.Z, vector.W);
-            GL11.Clear((uint)All11.ColorBufferBit);
+            if (openGLESVersion == GLContextVersion.Gles2_0)
+            {
+                GL20.ClearColor(vector.X, vector.Y, vector.Z, vector.W);
+                GL20.Clear((uint)All20.ColorBufferBit);
+            }
+            else
+            {
+                GL11.ClearColor(vector.X, vector.Y, vector.Z, vector.W);
+                GL11.Clear((uint)All11.ColorBufferBit);
+            }
         }
 
         public void Clear(ClearOptions options, Color color, float depth, int stencil)
@@ -139,10 +162,20 @@ namespace Microsoft.Xna.Framework.Graphics
 
         public void Clear(ClearOptions options, Vector4 color, float depth, int stencil)
         {
-            GL11.ClearColor(color.X, color.Y, color.Z, color.W);
-            GL11.ClearDepth(depth);
-            GL11.ClearStencil(stencil);
-            GL11.Clear((uint)(All11.ColorBufferBit | All11.DepthBufferBit | All11.StencilBufferBit));
+            if (openGLESVersion == GLContextVersion.Gles2_0)
+            {
+                GL20.ClearColor(color.X, color.Y, color.Z, color.W);
+                GL20.ClearDepth(depth);
+                GL20.ClearStencil(stencil);
+                GL20.Clear((uint)(All20.ColorBufferBit | All20.DepthBufferBit | All20.StencilBufferBit));
+            }
+            else
+            {
+                GL11.ClearColor(color.X, color.Y, color.Z, color.W);
+                GL11.ClearDepth(depth);
+                GL11.ClearStencil(stencil);
+                GL11.Clear((uint)(All11.ColorBufferBit | All11.DepthBufferBit | All11.StencilBufferBit));
+            }
         }
 
         public void Clear(ClearOptions options, Color color, float depth, int stencil, Rectangle[] regions)
@@ -172,7 +205,10 @@ namespace Microsoft.Xna.Framework.Graphics
 
         public void Present()
         {
-            GL11.Flush();
+            if (openGLESVersion == GLContextVersion.Gles2_0)
+                GL20.Flush();
+            else
+                GL11.Flush();
         }
 
         public void Present(Rectangle? sourceRectangle, Rectangle? destinationRectangle, IntPtr overrideWindowHandle)
@@ -329,10 +365,11 @@ namespace Microsoft.Xna.Framework.Graphics
 
         public void SetRenderTarget(RenderTarget2D rendertarget)
         {
-            //  if (openGLESVersion == EAGLRenderingAPI.OpenGLES2)
-            SetRenderTargetGL20(rendertarget);
-            // else
-            //     SetRenderTargetGL11(rendertarget);
+            //if (openGLESVersion == EAGLRenderingAPI.OpenGLES2)
+            if (openGLESVersion == GLContextVersion.Gles2_0)
+                SetRenderTargetGL20(rendertarget);
+            else
+                SetRenderTargetGL11(rendertarget);
 
         }
 
@@ -350,8 +387,8 @@ namespace Microsoft.Xna.Framework.Graphics
                 GL20.FramebufferTexture2D(All20.Framebuffer, All20.ColorAttachment0, All20.Texture2D, rendertarget.ID, 0);
 
                 All20 status = GL20.CheckFramebufferStatus(All20.Framebuffer);
-               // if (status != All20.FramebufferComplete)
-               //     throw new Exception("Error creating framebuffer: " + status);
+                // if (status != All20.FramebufferComplete)
+                //     throw new Exception("Error creating framebuffer: " + status);
                 defaultFramebuffer = false;
             }
         }

@@ -48,6 +48,7 @@ using All20 = OpenTK.Graphics.ES20.All;
 
 using Microsoft.Xna.Framework;
 using System.Text;
+using Java.Nio;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -213,7 +214,7 @@ namespace Microsoft.Xna.Framework.Graphics
             int startIndex = 0;
             int index = 0;
             int texID = -1;
-            Color lastTint = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+            Color lastTint = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 
             // make sure the vertexArray has enough space
             if (_batchItemList.Count * 4 > _vertexArray.Length)
@@ -291,7 +292,19 @@ namespace Microsoft.Xna.Framework.Graphics
         {
             // draw stuff
             if (start != end)
-                GL20.DrawElements(All20.Triangles, (end - start) / 2 * 3, All20.UnsignedShort, (IntPtr)((uint)_indexHandle.AddrOfPinnedObject() + (uint)(start / 2 * 3 * sizeof(short))));
+            {
+                    
+                    GL20.DrawElements(All20.Triangles, (end - start) / 2 * 3, All20.UnsignedShort, (IntPtr)((uint)_indexHandle.AddrOfPinnedObject() + (uint)(start / 2 * 3 * sizeof(short))));
+                    //GL11.DrawElements(All11.Triangles, (end - start) / 2 * 3, All11.UnsignedShort, (IntPtr)((uint)_indexHandle.AddrOfPinnedObject() + (uint)(start / 2 * 3 * sizeof(short))));
+                    //int errAndroidGL = Android.Opengl.GLES20.GlGetError();
+                    //All20 errGenericGL = GL20.GetError();
+                    //if (errAndroidGL != Android.Opengl.GLES20.GlNoError || errGenericGL != All20.NoError)
+                    //{
+                    //    string error = string.Format("OpenGL-ES 2.0:\n\tAndroid:{0,10:X}\n\tGeneric:{0, 10:X}", ((Android.Opengl.GLES20)errAndroidGL), (All20)errGenericGL);
+                    //    Console.WriteLine(error);
+                    //}
+            }
+
         }
     }
 }

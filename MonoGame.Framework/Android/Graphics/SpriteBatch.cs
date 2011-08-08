@@ -66,6 +66,7 @@ namespace Microsoft.Xna.Framework.Graphics
 
 
             string fragmentShaderSrc = @"precision mediump float;
+
                                          varying vec2 vTexCoord;
 										 varying vec4 vTint;
                                          uniform sampler2D sTexture;
@@ -109,6 +110,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 GL20.DeleteProgram(program);
                 throw new InvalidOperationException("Unable to link program");
             }
+
 
             matWorld = Matrix4.Identity;
             matViewScreen = Matrix4.CreateRotationZ((float)Math.PI) *

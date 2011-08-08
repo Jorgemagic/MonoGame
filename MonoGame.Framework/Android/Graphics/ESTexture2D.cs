@@ -105,9 +105,19 @@ namespace Microsoft.Xna.Framework.Graphics
 
             GL20.GL.GenTextures(1, ref _name);
             GL20.GL.BindTexture(GL20.All.Texture2D, _name);
-            GL20.GL.TexParameter(GL20.All.Texture2D, GL20.All.TextureMinFilter, (int)filter);
-            GL20.GL.TexParameter(GL20.All.Texture2D, GL20.All.TextureMagFilter, (int)filter);
+
+            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureMinFilter, (int)GL20.All.Linear);
+            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureMagFilter, (int)GL20.All.Linear);
+            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureWrapS, (int)GL20.All.ClampToEdge);
+            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureWrapT, (int)GL20.All.ClampToEdge);
+
             Android.Opengl.GLUtils.TexImage2D((int)GL20.All.Texture2D, 0, imageSource, 0);
+            imageSource.Recycle();
+
+            int errAndroidGL = Android.Opengl.GLES20.GlGetError();
+            GL20.All errGenericGL = GL20.GL.GetError();
+            if(errAndroidGL != Android.Opengl.GLES20.GlNoError || errGenericGL != GL20.All.NoError )
+                Console.WriteLine(string.Format("OpenGL-ES 2.0:\n\tAndroid:{0,10:X}\n\tGeneric:{0, 10:X}", errAndroidGL, errGenericGL));
 
             _maxS = _size.Width / (float)_width;
             _maxT = _size.Height / (float)_height;
@@ -462,6 +472,7 @@ namespace Microsoft.Xna.Framework.Graphics
             {
                 return _pixelData;
             }
-        }
+        }       
     }
+
 }

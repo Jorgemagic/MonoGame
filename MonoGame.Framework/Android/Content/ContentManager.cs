@@ -142,6 +142,7 @@ namespace Microsoft.Xna.Framework.Content
                     //Basically the same as Texture2D.FromFile but loading from the assets instead of a filePath
                     Stream assetStream = Game.contextInstance.Assets.Open(assetName);
                     Bitmap image = BitmapFactory.DecodeStream(assetStream);
+                    //Bitmap image = BitmapFactory.DecodeFileDescriptor(Game.contextInstance.Assets.OpenFd(assetName).FileDescriptor);
                     ESImage theTexture;
                         
                     if(GraphicsDevice.openGLESVersion== OpenTK.Graphics.GLContextVersion.Gles2_0)

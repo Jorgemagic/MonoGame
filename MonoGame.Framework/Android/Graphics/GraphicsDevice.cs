@@ -379,14 +379,16 @@ namespace Microsoft.Xna.Framework.Graphics
             if (rendertarget == null)
             {
                 GL20.BindFramebuffer(All20.Framebuffer, framebufferScreen);
+                
                 defaultFramebuffer = true;
             }
             else
             {
                 GL20.BindFramebuffer(All20.Framebuffer, rendertarget.framebuffer);
+                
                 GL20.FramebufferTexture2D(All20.Framebuffer, All20.ColorAttachment0, All20.Texture2D, rendertarget.ID, 0);
-
-                All20 status = GL20.CheckFramebufferStatus(All20.Framebuffer);
+                
+                //All20 status = GL20.CheckFramebufferStatus(All20.Framebuffer);
                 // if (status != All20.FramebufferComplete)
                 //     throw new Exception("Error creating framebuffer: " + status);
                 defaultFramebuffer = false;

@@ -106,8 +106,8 @@ namespace Microsoft.Xna.Framework.Graphics
             GL20.GL.GenTextures(1, ref _name);
             GL20.GL.BindTexture(GL20.All.Texture2D, _name);
 
-            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureMinFilter, (int)GL20.All.Linear);
-            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureMagFilter, (int)GL20.All.Linear);
+            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureMinFilter, (int)filter);
+            GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureMagFilter, (int)filter);
             GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureWrapS, (int)GL20.All.ClampToEdge);
             GL20.GL.TexParameter( GL20.All.Texture2D, GL20.All.TextureWrapT, (int)GL20.All.ClampToEdge);
 

@@ -206,15 +206,12 @@ namespace Microsoft.Xna.Framework.Graphics
             int size = VertexPosition2ColorTexture.GetSize();
             GL20.VertexAttribPointer(attributePosition, 2, All20.Float, false, size, _vertexHandle.AddrOfPinnedObject());
             GL20.VertexAttribPointer(attributeTexCoord, 2, All20.Float, false, size, (IntPtr)((uint)_vertexHandle.AddrOfPinnedObject() + (uint)(sizeof(float) * 2 + sizeof(uint))));
-            //			GL11.VertexPointer(2,All11.Float,size,_vertexHandle.AddrOfPinnedObject() );
-            //			GL11.ColorPointer(4, All11.UnsignedByte,size,(IntPtr)((uint)_vertexHandle.AddrOfPinnedObject()+(uint)(sizeof(float)*2)));
-            //			GL11.TexCoordPointer(2, All11.Float,size,(IntPtr)((uint)_vertexHandle.AddrOfPinnedObject()+(uint)(sizeof(float)*2+sizeof(uint))) );
-
+            
             // setup the vertexArray array
             int startIndex = 0;
             int index = 0;
             int texID = -1;
-            Color lastTint = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+            Color lastTint = new Color(0.0f, 0.0f, 0.0f, 0.0f);
 
             // make sure the vertexArray has enough space
             if (_batchItemList.Count * 4 > _vertexArray.Length)
@@ -295,7 +292,6 @@ namespace Microsoft.Xna.Framework.Graphics
             {
                     
                     GL20.DrawElements(All20.Triangles, (end - start) / 2 * 3, All20.UnsignedShort, (IntPtr)((uint)_indexHandle.AddrOfPinnedObject() + (uint)(start / 2 * 3 * sizeof(short))));
-                    //GL11.DrawElements(All11.Triangles, (end - start) / 2 * 3, All11.UnsignedShort, (IntPtr)((uint)_indexHandle.AddrOfPinnedObject() + (uint)(start / 2 * 3 * sizeof(short))));
                     //int errAndroidGL = Android.Opengl.GLES20.GlGetError();
                     //All20 errGenericGL = GL20.GetError();
                     //if (errAndroidGL != Android.Opengl.GLES20.GlNoError || errGenericGL != All20.NoError)

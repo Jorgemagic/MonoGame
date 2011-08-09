@@ -74,6 +74,13 @@ namespace Microsoft.Xna.Framework.Graphics
             if (GraphicsDevice.openGLESVersion ==  GLContextVersion.Gles2_0)
             {
                 GL20.GenFramebuffers(1, ref framebuffer);
+                
+                //GL20.GenTextures(1, ref framebuffer);
+                //GL20.TexImage2D(All20.Texture2D, 0, (int)All20.Rgba, width, height, 100, All20.Rgba, All20.UnsignedByte, IntPtr.Zero);
+                //Android.Opengl.GLES20.Frame
+                //FIX:Tamaño del Framebuffer; 
+                //GL20.TexImage2D(All20.Texture2D, 0, (int)All20.Rgba, width, height, 0, All20.Rgba, All20.UnsignedByte, IntPtr.Zero);
+                
             }
             else
                 allocateOpenGLTexture();

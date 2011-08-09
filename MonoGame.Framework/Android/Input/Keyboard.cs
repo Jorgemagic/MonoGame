@@ -74,6 +74,13 @@ namespace Microsoft.Xna.Framework.Input
             maps[Keycode.DpadRight] = Keys.Right;
             maps[Keycode.DpadUp] = Keys.Up;
             maps[Keycode.DpadDown] = Keys.Down;
+            maps[Keycode.Back] = Keys.Back;
+            maps[Keycode.Menu] = Keys.Help; // Is Keys.Help Keycode for Menu Button?
+            maps[Keycode.Search] = Keys.BrowserSearch;
+            maps[Keycode.Home] = Keys.Home;
+            maps[Keycode.VolumeUp] = Keys.VolumeUp;
+            maps[Keycode.VolumeDown] = Keys.VolumeDown;
+            
             // TODO: put in all the other mappings
             return maps;
         }

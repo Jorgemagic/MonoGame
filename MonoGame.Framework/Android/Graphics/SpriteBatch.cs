@@ -309,6 +309,10 @@ namespace Microsoft.Xna.Framework.Graphics
             }
 
             _batcher.DrawBatch20(_sortMode);
+
+            
+            //GL20.Disable(All20.Texture2D);
+
         }
 
         private void End11()

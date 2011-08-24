@@ -96,5 +96,12 @@ namespace Microsoft.Xna.Framework.Graphics
 			//data = null;
 
 		}
+		
+		public override void Dispose ()
+		{
+			base.Dispose();
+			
+			GL20.DeleteFramebuffers(1,ref framebuffer);
+		}
 	}
 }

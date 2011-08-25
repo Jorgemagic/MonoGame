@@ -121,7 +121,7 @@ namespace Microsoft.Xna.Framework
                 GraphicsDevice.openGLESVersion = GLContextVersion;
                 base.CreateFrameBuffer();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //device doesn't support OpenGLES 2.0; retry with 1.1:
                 GLContextVersion = GLContextVersion.Gles1_1;
@@ -151,7 +151,7 @@ namespace Microsoft.Xna.Framework
                 _lastUpdate = _now;
                 game.DoDraw(_drawGameTime);
             }
-
+            
             SwapBuffers();
         }
 

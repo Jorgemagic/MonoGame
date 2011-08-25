@@ -726,6 +726,15 @@ namespace Microsoft.Xna.Framework.Graphics
 				throw new NotImplementedException();
 			}
         }
+		
+		/// <summary>
+		/// Unload Texture (ESImage class) 
+		/// </summary>
+		public override void Dispose ()
+		{
+			if (texture != null)
+				texture.Dispose();
+		} 		
 	}
 }
 

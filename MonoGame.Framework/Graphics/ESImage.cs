@@ -42,6 +42,7 @@ using System;
 //using MonoTouch.UIKit;
 using OpenTK.Graphics.ES11;
 using System.Drawing;
+using MonoTouch.UIKit;
 
 namespace Microsoft.Xna.Framework.Graphics
 {
@@ -230,5 +231,11 @@ namespace Microsoft.Xna.Framework.Graphics
 				return texture.PixelFormat;
 			}
         }
+		
+		public void Dispose()
+		{
+			if (texture != null)
+				texture.Dispose();
+		}
 	}
 }

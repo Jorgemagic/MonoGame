@@ -389,8 +389,8 @@ namespace Microsoft.Xna.Framework.Graphics
                 GL20.FramebufferTexture2D(All20.Framebuffer, All20.ColorAttachment0, All20.Texture2D, rendertarget.ID, 0);
 
                 All20 status = GL20.CheckFramebufferStatus(All20.Framebuffer);
-                if (status != All20.FramebufferComplete)
-                    throw new Exception("Error creating framebuffer: " + status);
+                //if (status != All20.FramebufferComplete)
+                //    throw new Exception("Error creating framebuffer: " + status);
                 
                 defaultFramebuffer = false;
             }

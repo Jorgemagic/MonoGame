@@ -121,14 +121,14 @@ namespace Microsoft.Xna.Framework
                 GraphicsDevice.openGLESVersion = GLContextVersion;
                 base.CreateFrameBuffer();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //device doesn't support OpenGLES 2.0; retry with 1.1:
                 GLContextVersion = GLContextVersion.Gles1_1;
                 GraphicsDevice.openGLESVersion = GLContextVersion;
                 base.CreateFrameBuffer();
             }
-            
+
         }
 
 
@@ -151,7 +151,7 @@ namespace Microsoft.Xna.Framework
                 _lastUpdate = _now;
                 game.DoDraw(_drawGameTime);
             }
-            
+
             SwapBuffers();
         }
 
@@ -236,61 +236,6 @@ namespace Microsoft.Xna.Framework
 
         public override bool OnTouchEvent(MotionEvent e)
         {
-            //TouchLocationState state = TouchLocationState.Invalid;
-
-            //if (e.Action == MotionEventActions.Cancel) {
-            //    state = TouchLocationState.Invalid;
-            //}
-            //if (e.Action == MotionEventActions.Up) {
-            //    state = TouchLocationState.Released;
-            //}
-            //if (e.Action == MotionEventActions.Move) {
-            //    state = TouchLocationState.Moved;
-            //    Mouse.SetPosition((int) e.GetX(), (int) e.GetY());
-            //}
-            //if (e.Action == MotionEventActions.Down) {
-            //    state = TouchLocationState.Pressed;
-            //    Mouse.SetPosition((int) e.GetX(), (int) e.GetY());
-            //}
-
-            //TouchLocation tprevious;
-            //TouchLocation tlocation;
-            //Vector2 position = new Vector2(e.GetX(), e.GetY());
-            //Vector2 translatedPosition = position;
-
-            //switch (CurrentOrientation) {
-            //    case DisplayOrientation.Portrait: 
-            //        break;
-            //    case DisplayOrientation.LandscapeRight: 
-            //        translatedPosition = new Vector2(ClientBounds.Height - position.Y, position.X);
-            //        break;
-            //    case DisplayOrientation.LandscapeLeft: 
-            //        translatedPosition = new Vector2(position.Y, ClientBounds.Width - position.X);
-            //        break;
-            //    case DisplayOrientation.PortraitUpsideDown:
-            //        translatedPosition = new Vector2(ClientBounds.Width - position.X, ClientBounds.Height - position.Y);
-            //        break;
-            //}
-
-
-            //if (state != TouchLocationState.Pressed && _previousTouches.TryGetValue(e.Handle, out tprevious)) {
-            //    tlocation = new TouchLocation(e.Handle.ToInt32(), state, translatedPosition, e.Pressure, tprevious.State, tprevious.Position, tprevious.Pressure);
-            //}
-            //else {
-            //    tlocation = new TouchLocation(e.Handle.ToInt32(), state, translatedPosition, e.Pressure);
-            //}
-
-            //TouchPanel.Collection.Clear();
-            //TouchPanel.Collection.Add(tlocation);
-
-            //if (state != TouchLocationState.Released)
-            //    _previousTouches[e.Handle] = tlocation;
-            //else
-            //    _previousTouches.Remove(e.Handle);
-
-            //GamePad.Instance.Update(e);
-
-            //return base.OnTouchEvent(e);
             return false;
         }
 
@@ -352,53 +297,198 @@ namespace Microsoft.Xna.Framework
         public event EventHandler ClientSizeChanged;
         public event EventHandler ScreenDeviceNameChanged;
 
+        //private Vector2 GetOffsetPosition(Vector2 position) 
+        //{ 
+        //    Vector2 translatedPosition = position; 
+        //    switch (CurrentOrientation) 
+        //    { 
+        //        case DisplayOrientation.Portrait: 
+        //            break;
+        //        case DisplayOrientation.LandscapeRight: 
+        //            translatedPosition = new Vector2(ClientBounds.Height - position.Y, position.X); 
+        //            break; 
+        //        case DisplayOrientation.LandscapeLeft: 
+        //            translatedPosition = new Vector2(position.Y, ClientBounds.Width - position.X); 
+        //            break; 
+        //        case DisplayOrientation.PortraitUpsideDown: 
+        //            translatedPosition = new Vector2(ClientBounds.Width - position.X, ClientBounds.Height - position.Y); 
+        //            break; 
+        //    } 
+        //    return translatedPosition * UIScreen.MainScreen.Scale; 
+        //}
+
         public bool OnTouch(View v, MotionEvent e)
         {
-            TouchLocationState state = TouchLocationState.Invalid;
-
-            if (e.Action == MotionEventActions.Cancel)
-            {
-                state = TouchLocationState.Invalid;
-            }
-            if (e.Action == MotionEventActions.Up)
-            {
-                state = TouchLocationState.Released;
-            }
-            if (e.Action == MotionEventActions.Move)
-            {
-                state = TouchLocationState.Moved;
-                Mouse.SetPosition((int)e.GetX(), (int)e.GetY());
-
-            }
-            if (e.Action == MotionEventActions.Down)
-            {
-                state = TouchLocationState.Pressed;
-                Mouse.SetPosition((int)e.GetX(), (int)e.GetY());
-            }
-
-            TouchLocation tprevious;
             TouchLocation tlocation;
-            Vector2 position = new Vector2(e.GetX(), e.GetY());
-            Vector2 translatedPosition = position;
-            if (state != TouchLocationState.Pressed && _previousTouches.TryGetValue(e.Handle, out tprevious))
+            TouchCollection collection = TouchPanel.Collection;
+
+            Vector2 position = Vector2.Zero;
+            position.X = e.GetX(e.ActionIndex);
+            position.Y = e.GetY(e.ActionIndex);
+            int id = e.GetPointerId(e.ActionIndex);
+            int index;
+
+            switch (e.ActionMasked)
             {
-                tlocation = new TouchLocation(e.Handle.ToInt32(), state, translatedPosition, e.Pressure, tprevious.State, tprevious.Position, tprevious.Pressure);
+                // DOWN
+                case 0:
+                case 5:
+                    tlocation = new TouchLocation(id, TouchLocationState.Pressed, position);
+                    collection.Add(tlocation);
+                    break;
+                // UP
+                case 1:
+                case 6:
+                    index = collection.FindById(e.GetPointerId(e.ActionIndex), out tlocation);
+                    if (index >= 0)
+                    {
+                        tlocation.State = TouchLocationState.Released;
+                        collection[index] = tlocation;
+                    }
+                    break;
+                // MOVE
+                case 2:
+                    for (int i = 0; i < e.PointerCount; i++)
+                    {
+                        id = e.GetPointerId(i);
+                        position.X = e.GetX(i);
+                        position.Y = e.GetY(i);
+                        index = collection.FindById(id, out tlocation);
+                        if (index >= 0)
+                        {
+                            tlocation.State = TouchLocationState.Moved;
+                            tlocation.Position = position;
+                            collection[index] = tlocation;
+                        }
+                    }
+                    break;
+                // CANCEL, OUTSIDE
+                case 3:
+                case 4:
+                    index = collection.FindById(id, out tlocation);
+                    if (index >= 0)
+                    {
+                        tlocation.State = TouchLocationState.Invalid;
+                        collection[index] = tlocation;
+                    }
+                    break;
             }
-            else
-            {
-                tlocation = new TouchLocation(e.Handle.ToInt32(), state, translatedPosition, e.Pressure);
-            }
-
-            TouchPanel.Collection.Clear();
-            TouchPanel.Collection.Add(tlocation);
-
-            if (state != TouchLocationState.Released)
-                _previousTouches[e.Handle] = tlocation;
-            else
-                _previousTouches.Remove(e.Handle);
-
 
             return true;
+
+            //for (int i = 0; i < e.PointerCount; i++)
+            //{
+            //    Vector2 position = Vector2.Zero;
+            //    position.X = e.GetX(i);
+            //    position.Y = e.GetY(i);
+
+            //    TouchLocation tlocation;
+            //    TouchCollection collection = TouchPanel.Collection;
+
+            //    int index;
+            //    int id = e.GetPointerId(i);
+
+            //    switch (e.ActionMasked)
+            //    {
+            //        //case MotionEventActions.Down:
+            //        case 0:
+            //            //Log.Debug("TESTING", string.Format("DOWN: ActionIndex({5}) ActionMasked({6}) BlobCount=[{3}] BlobID=[{2}] BlobPos=({0:N},{1:N})", position.X, position.Y, id, e.PointerCount, e.Action, e.ActionIndex, e.ActionMasked));
+            //            tlocation = new TouchLocation(id, TouchLocationState.Pressed, position);
+            //            collection.Add(tlocation);
+            //            break;
+            //        //case MotionEventActions.PointerDown:
+            //        case 5:
+            //            //Log.Debug("TESTING", string.Format("DOWN: ActionIndex({5}) ActionMasked({6}) BlobCount=[{3}] BlobID=[{2}] BlobPos=({0:N},{1:N})", position.X, position.Y, id, e.PointerCount, e.Action, e.ActionIndex, e.ActionMasked));
+            //            tlocation = new TouchLocation(e.GetPointerId(e.ActionIndex), TouchLocationState.Pressed, position);
+            //            collection.Add(tlocation);
+            //            break;
+            //        //case MotionEventActions.Up:
+            //        case 1:
+            //            index = collection.FindById(id, out tlocation);
+            //            if (index >= 0)
+            //            {
+            //                tlocation.State = TouchLocationState.Released;
+            //                collection[index] = tlocation;
+            //            }
+            //            break;
+            //        //case MotionEventActions.PointerUp:
+            //        case 6:
+            //            //Log.Debug("TESTING", string.Format("UP: ActionIndex({5}) ActionMasked({6}) BlobCount=[{3}] BlobID=[{2}] BlobPos=({0:N},{1:N})", position.X, position.Y, id, e.PointerCount, e.Action, e.ActionIndex, e.ActionMasked));
+            //            index = collection.FindById(e.GetPointerId(e.ActionIndex), out tlocation);
+            //            if (index >= 0)
+            //            {
+            //                tlocation.State = TouchLocationState.Released;
+            //                collection[index] = tlocation;
+            //            }
+            //            break;
+            //        //case MotionEventActions.Move:
+            //        case 2:
+            //            //Log.Debug("TESTING", string.Format("MOVE: Count=[{3}] ID=[{2}] ({0:N},{1:N})", position.X, position.Y, id, e.PointerCount));
+            //            index = collection.FindById(id, out tlocation);
+            //            if (index >= 0)
+            //            {
+            //                tlocation.State = TouchLocationState.Moved;
+            //                tlocation.Position = position;
+            //                collection[index] = tlocation;
+            //            }
+            //            break;
+            //        default:
+            //            //Log.Debug("TESTING", string.Format("OTHER {4}: ActionIndex({5}) ActionMasked({6}) BlobCount=[{3}] BlobID=[{2}] BlobPos=({0:N},{1:N})", position.X, position.Y, id, e.PointerCount, e.Action, e.ActionIndex, e.ActionMasked));
+            //            index = collection.FindById(id, out tlocation);
+            //            if (index >= 0)
+            //            {
+            //                tlocation.State = TouchLocationState.Released;
+            //                collection[index] = tlocation;
+            //            }
+            //            break;
+            //    }
+            //}
+            //return true;
+
+            //TouchLocationState state = TouchLocationState.Invalid;
+
+            //if (e.Action == MotionEventActions.Cancel)
+            //{
+            //    state = TouchLocationState.Invalid;
+            //}
+            //if (e.Action == MotionEventActions.Up)
+            //{
+            //    state = TouchLocationState.Released;
+            //}
+            //if (e.Action == MotionEventActions.Move)
+            //{
+            //    state = TouchLocationState.Moved;
+            //    Mouse.SetPosition((int)e.GetX(), (int)e.GetY());
+            //}
+            //if (e.Action == MotionEventActions.Down)
+            //{
+            //    state = TouchLocationState.Pressed;
+            //    Mouse.SetPosition((int)e.GetX(), (int)e.GetY());
+            //}
+
+            //TouchLocation tprevious;
+            //TouchLocation tlocation;
+            //Vector2 position = new Vector2(e.GetX(), e.GetY());
+            //Vector2 translatedPosition = position;
+            //if (state != TouchLocationState.Pressed && _previousTouches.TryGetValue(e.Handle, out tprevious))
+            //{
+            //    tlocation = new TouchLocation(e.Handle.ToInt32(), state, translatedPosition, e.Pressure, tprevious.State, tprevious.Position, tprevious.Pressure);
+            //}
+            //else
+            //{
+            //    tlocation = new TouchLocation(e.Handle.ToInt32(), state, translatedPosition, e.Pressure);
+            //}
+
+            //TouchPanel.Collection.Clear();
+            //TouchPanel.Collection.Add(tlocation);
+
+            //if (state != TouchLocationState.Released)
+            //    _previousTouches[e.Handle] = tlocation;
+            //else
+            //    _previousTouches.Remove(e.Handle);
+            //return true;
+
+            //////////
             //TouchLocationState state = TouchLocationState.Invalid;
 
             //if (e.Action == MotionEventActions.Cancel)

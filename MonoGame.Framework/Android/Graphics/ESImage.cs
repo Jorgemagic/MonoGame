@@ -215,6 +215,14 @@ namespace Microsoft.Xna.Framework.Graphics
             }
         }
 
+        public IntPtr PixelData 
+        { 
+            get 
+            { 
+                return texture.PixelData; 
+            } 
+        }
+
         public ESImage GetSubImageAtPoint(Vector2 point, int subImageWidth, int subImageHeight, float subImageScale)
         {
             //Create a new Image instance using the texture which has been assigned to the current instance

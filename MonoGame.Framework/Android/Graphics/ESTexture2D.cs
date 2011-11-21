@@ -114,13 +114,15 @@ namespace Microsoft.Xna.Framework.Graphics
             Android.Opengl.GLUtils.TexImage2D((int)GL20.All.Texture2D, 0, imageSource, 0);
             imageSource.Recycle();
 
-            int errAndroidGL = Android.Opengl.GLES20.GlGetError();
-            GL20.All errGenericGL = GL20.GL.GetError();
-            if(errAndroidGL != Android.Opengl.GLES20.GlNoError || errGenericGL != GL20.All.NoError )
-                Console.WriteLine(string.Format("OpenGL-ES 2.0:\n\tAndroid:{0,10:X}\n\tGeneric:{0, 10:X}", errAndroidGL, errGenericGL));
+            //int errAndroidGL = Android.Opengl.GLES20.GlGetError();
+            //GL20.All errGenericGL = GL20.GL.GetError();
+            //if(errAndroidGL != Android.Opengl.GLES20.GlNoError || errGenericGL != GL20.All.NoError )
+            //    Console.WriteLine(string.Format("OpenGL-ES 2.0:\n\tAndroid:{0,10:X}\n\tGeneric:{0, 10:X}", errAndroidGL, errGenericGL));
 
             _maxS = _size.Width / (float)_width;
             _maxT = _size.Height / (float)_height;
+
+
         }
 
         public void InitWithBitmapGL11(Bitmap imageSource, GL11.All filter)
@@ -153,10 +155,14 @@ namespace Microsoft.Xna.Framework.Graphics
 
             _maxS = _size.Width / (float)_width;
             _maxT = _size.Height / (float)_height;
+
+            _pixelData = imageSource.Handle;
         }
 
         public void InitWithDataGL20(IntPtr data, SurfaceFormat pixelFormat, int width, int height, Size size, GL20.All filter)
         {
+
+
             openGLVersion = GLContextVersion.Gles2_0;
 
             GL20.GL.GenTextures(1, ref _name);
@@ -200,7 +206,6 @@ namespace Microsoft.Xna.Framework.Graphics
             _maxT = size.Height / (float)height;
 
             _pixelData = data;
-
         }
 
         public void InitWithDataGL11(IntPtr data, SurfaceFormat pixelFormat, int width, int height, Size size, GL11.All filter)

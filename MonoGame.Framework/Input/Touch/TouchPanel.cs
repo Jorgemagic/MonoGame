@@ -40,6 +40,7 @@
 
 #region Using clause
 using System;
+using Android.Util;
 #endregion Using clause
 
 namespace Microsoft.Xna.Framework.Input.Touch
@@ -58,6 +59,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
         {
 			TouchCollection result = new TouchCollection(Collection);
 			Collection.Update();
+            //Log.Debug("TOUCHPANEL", string.Format("Blob Collection Count : {0}", Collection.Count));
 			return result;
         }
 		
